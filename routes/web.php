@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SubCategoryController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\LoginController;
@@ -34,6 +35,18 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::put('/{id}', [SubCategoryController::class, 'update'])->name('admin.subcategory.update');
         Route::delete('/{id}', [SubCategoryController::class, 'destroy'])->name('admin.subcategory.destroy');
     });
+
+    Route::prefix('product')->group(function () {
+        Route::get('/', [ProductController::class, 'index'])->name('admin.product.index');
+        Route::get('/create', [ProductController::class, 'create'])->name('admin.product.create');
+        Route::post('/store', [ProductController::class, 'store'])->name('admin.product.store');
+        Route::get('/{id}/edit', [ProductController::class, 'edit'])->name('admin.product.edit');
+        Route::put('/{id}', [ProductController::class, 'update'])->name('admin.product.update');
+        Route::delete('/{id}', [ProductController::class, 'destroy'])->name('admin.product.destroy');
+    });
+    
+    
+
 });
 
 // Authentication Routes
