@@ -27,6 +27,21 @@
                 <li>
                     <a href="{{ route('admin.product.index') }}" class="nav-link text-white">📂Quản lý sản phẩm </a>
                 </li>
+                <li>
+                    <a href="{{ route('admin.size.index') }}" class="nav-link text-white">📂Quản lý size</a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.product_size_color.index') }}" class="nav-link text-white">📂Quản lý màu</a
+                </li>
+                <li>
+                    <a href="{{ route('admin.users.index') }}" class="nav-link text-white">📂Quản lý người dùng</a
+                </li>
+                <li>
+                    <a href="{{ route('admin.coupon.index') }}" class="nav-link text-white">📂Quản lý mã giảm giá</a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.banner.index') }}" class="nav-link text-white">📂Quản lý Banner</a>
+                </li>
             </ul>
         </nav>
 

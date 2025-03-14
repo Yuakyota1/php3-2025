@@ -39,7 +39,7 @@ class ProductController extends Controller
             $imagePaths = [];
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
-                    $imagePaths[] = $image->store('products', 'public'); // Lưu ảnh vào storage/app/public/products
+                    $imagePaths[] = $image->store('products', 'public'); 
                 }
             }
     
