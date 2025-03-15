@@ -17,6 +17,17 @@ class ProductController extends Controller
         return view('admin.product.index', compact('products'));
     }
 
+
+    public function shop()
+    {
+        $products = Product::paginate(12); // Hiển thị 12 sản phẩm mỗi trang
+        return view('product.index', compact('products'));
+    }
+    public function show($id) {
+        $product = Product::with(['sizeColors', 'subCategory'])->findOrFail($id);
+        return view('product.detail', compact('product'));
+    }
+    
     // Hiển thị form tạo sản phẩm
     public function create()
     {

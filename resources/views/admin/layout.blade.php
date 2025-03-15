@@ -28,7 +28,7 @@
                     <a href="{{ route('admin.product.index') }}" class="nav-link text-white">📂Quản lý sản phẩm </a>
                 </li>
                 <li>
-                    <a href="{{ route('admin.size.index') }}" class="nav-link text-white">📂Quản lý size</a>
+                    <a href="{{ route('admin.size.index') }}" class="nav-link text-white">📂Quản lý kích thước</a>
                 </li>
                 <li>
                     <a href="{{ route('admin.product_size_color.index') }}" class="nav-link text-white">📂Quản lý màu</a
@@ -41,6 +41,12 @@
                 </li>
                 <li>
                     <a href="{{ route('admin.banner.index') }}" class="nav-link text-white">📂Quản lý Banner</a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.blog.index') }}" class="nav-link text-white">📂Quản lý bài viết</a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.post_category.index') }}" class="nav-link text-white">📂Quản lý danh mục bài viết</a>
                 </li>
             </ul>
         </nav>

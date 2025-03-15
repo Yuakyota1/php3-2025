@@ -10,6 +10,8 @@ use App\Http\Controllers\ProductSizeColorController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\BannerController;
+use App\Http\Controllers\BlogController;
+use App\Http\Controllers\PostCategoryController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\LoginController;
@@ -96,6 +98,23 @@ Route::prefix('banner')->group(function () {
     Route::delete('/{banner}', [BannerController::class, 'destroy'])->name('admin.banner.destroy');
 });
 
+Route::prefix('blog')->group(function () {
+    Route::get('/', [BlogController::class, 'index'])->name('admin.blog.index');
+    Route::get('/create', [BlogController::class, 'create'])->name('admin.blog.create');
+    Route::post('/store', [BlogController::class, 'store'])->name('admin.blog.store');
+    Route::get('/{blog}/edit', [BlogController::class, 'edit'])->name('admin.blog.edit');
+    Route::put('/{blog}', [BlogController::class, 'update'])->name('admin.blog.update');
+    Route::delete('/{blog}', [BlogController::class, 'destroy'])->name('admin.blog.destroy');
+});
+// Blog Categories Routes
+Route::prefix('post-category')->group(function () {
+    Route::get('/', [PostCategoryController::class, 'index'])->name('admin.post_category.index');
+    Route::get('/create', [PostCategoryController::class, 'create'])->name('admin.post_category.create');
+    Route::post('/', [PostCategoryController::class, 'store'])->name('admin.post_category.store');
+    Route::get('/{id}/edit', [PostCategoryController::class, 'edit'])->name('admin.post_category.edit');
+    Route::put('/{id}', [PostCategoryController::class, 'update'])->name('admin.post_category.update');
+    Route::delete('/{id}', [PostCategoryController::class, 'destroy'])->name('admin.post_category.destroy');
+});
 
 });
 
@@ -106,6 +125,12 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 use App\Http\Controllers\Auth\RegisterController;
+use App\Models\Product;
 
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
+
+Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::get('/product', [ProductController::class, 'shop'])->name('products');
+Route::get('product/detail/{id}', [ProductController::class, 'show'])->name('product.detail');
+

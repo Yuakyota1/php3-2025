@@ -31,4 +31,9 @@ class User extends Authenticatable
             'status' => 'boolean', // Ép kiểu status thành boolean
         ];
     }
+    public function blogs()
+{
+    return $this->hasMany(Blog::class, 'author_id');
+}
+
 }

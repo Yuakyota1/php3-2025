@@ -78,7 +78,7 @@
         <a href="" class="abc">Đăng kí</a>
       </li>
     </ul>
-    <!-- <ul class="ul-first-menu">
+    <ul class="ul-first-menu">
       <li>
         <a href="">Tài khoản của tôi</a>
       </li>
@@ -94,7 +94,7 @@
       </li>
       <li>
         <a href="">Đăng xuất</a>
-      </li> -->
+      </li>
     </ul>
     <div class="la-scroll-fix-infor-user">
       <div class="la-nav-menu-items">
