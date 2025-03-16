@@ -12,6 +12,7 @@ use App\Http\Controllers\CouponController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\PostCategoryController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\LoginController;
@@ -125,7 +126,7 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 use App\Http\Controllers\Auth\RegisterController;
-use App\Models\Product;
+
 
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
@@ -134,3 +135,10 @@ Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/product', [ProductController::class, 'shop'])->name('products');
 Route::get('product/detail/{id}', [ProductController::class, 'show'])->name('product.detail');
 
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+
+Route::post('/cart/store', [CartController::class, 'store'])->name('cart.store');
+Route::delete('/cart/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
+Route::delete('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
+
+Route::put('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');

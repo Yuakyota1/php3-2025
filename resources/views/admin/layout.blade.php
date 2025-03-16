@@ -15,6 +15,9 @@
         <nav class="bg-dark text-white vh-100 p-3" style="width: 250px;">
             <h4 class="text-center">Admin Panel</h4>
             <ul class="nav flex-column">
+               <li class="nav-item">
+               <a href="/"  class="nav-link text-white"> Trang chủ</a>
+               </li>
                 <li class="nav-item">
                     <a href="{{ route('admin.dashboard') }}" class="nav-link text-white">📊 Dashboard</a>
                 </li>

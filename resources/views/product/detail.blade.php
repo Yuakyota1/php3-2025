@@ -11,27 +11,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <style>
-        .carousel-item img {
-            max-height: 400px;
-            object-fit: contain;
-        }
-        .product-info {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        h2, h4, h5 {
-    font-size: 1.8rem;
-}
-
-p, label, select, input {
-    font-size: 1.2rem;
-}
-
-#productPrice {
-    font-size: 1.5rem;
-}
-
+        .carousel-item img { max-height: 400px; object-fit: contain; }
+        .product-info { display: flex; flex-direction: column; justify-content: center; }
+        h2, h4, h5 { font-size: 1.8rem; }
+        p, label, select, input { font-size: 1.2rem; }
+        #productPrice { font-size: 1.5rem; }
     </style>
 </head>
 <body>
@@ -91,6 +75,7 @@ p, label, select, input {
                 </div>
 
                 <p class="mt-2"><strong>Giá:</strong> <span id="productPrice" class="text-danger fs-5">0 VND</span></p>
+                <button id="addToCartBtn" class="btn btn-primary mt-3">Thêm vào giỏ hàng</button>
                 <a href="{{ url('/') }}" class="btn btn-secondary mt-3">Quay lại</a>
             </div>
         </div>
@@ -102,40 +87,77 @@ p, label, select, input {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        $(document).ready(function() {
-         let allData = @json($product->sizeColors->toArray());
+    $(document).ready(function() {
+        let allData = @json($product->sizeColors->toArray());
+        let basePrice = 0;
 
-            let basePrice = 0;
-
-            $('#sizeSelect').change(function() {
-                let selectedSize = $(this).val();
-                let colors = allData.filter(item => item.idSize == selectedSize);
-                
-                $('#colorSelect').html('<option value="">-- Chọn màu --</option>');
-                colors.forEach(item => {
-                    $('#colorSelect').append(`<option value="${item.color}" data-price="${item.price}">${item.color}</option>`);
-                });
-
-                $('#colorSelect').prop('disabled', colors.length === 0);
-                $('#productPrice').text('0 VND');
-                basePrice = 0;
+        $('#sizeSelect').change(function() {
+            let selectedSize = $(this).val();
+            let colors = allData.filter(item => item.idSize == selectedSize);
+            
+            $('#colorSelect').html('<option value="">-- Chọn màu --</option>');
+            colors.forEach(item => {
+                $('#colorSelect').append(`<option value="${item.color}" data-price="${item.price}">${item.color}</option>`);
             });
 
-            $('#colorSelect').change(function() {
-                basePrice = $(this).find(':selected').data('price') || 0;
-                updateTotalPrice();
-            });
-
-            $('#quantityInput').on('input', function() {
-                updateTotalPrice();
-            });
-
-            function updateTotalPrice() {
-                let quantity = parseInt($('#quantityInput').val()) || 1;
-                let totalPrice = basePrice * quantity;
-                $('#productPrice').text(new Intl.NumberFormat('vi-VN').format(totalPrice) + ' VND');
-            }
+            $('#colorSelect').prop('disabled', colors.length === 0);
+            $('#productPrice').text('0 VND');
+            basePrice = 0;
         });
-    </script>
+
+        $('#colorSelect').change(function() {
+            basePrice = $(this).find(':selected').data('price') || 0;
+            updateTotalPrice();
+        });
+
+        $('#quantityInput').on('input', function() {
+            updateTotalPrice();
+        });
+
+        function updateTotalPrice() {
+            let quantity = parseInt($('#quantityInput').val()) || 1;
+            let totalPrice = basePrice * quantity;
+            $('#productPrice').text(new Intl.NumberFormat('vi-VN').format(totalPrice) + ' VND');
+        }
+
+        $('#addToCartBtn').click(function() {
+            let productId = "{{ $product->id }}";
+            let size = $('#sizeSelect').val();
+            let color = $('#colorSelect').val();
+            let quantity = $('#quantityInput').val();
+            let price = basePrice;
+            let name = "{{ $product->product_name }}";
+            let image = "{{ asset('storage/' . (isset($images[0]) ? $images[0] : 'default.jpg')) }}";
+
+            if (!size || !color) {
+                alert('Vui lòng chọn kích thước và màu sắc!');
+                return;
+            }
+
+            $.ajax({
+                url: "{{ route('cart.store') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    product_id: productId,
+                    size: size,
+                    color: color,
+                    name: name,
+                    quantity: quantity,
+                    price: price,
+                    total_price: price * quantity,
+                    image: image
+                },
+                success: function(response) {
+                    alert(response.message);
+                    window.location.href = "{{ route('cart.index') }}";
+                },
+                error: function(xhr) {
+                    alert('Có lỗi xảy ra!');
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>

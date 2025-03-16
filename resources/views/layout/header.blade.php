@@ -56,12 +56,12 @@
         <div class="col-lg-3 col-100-h">
           <div id="trigger-mobile" class="visible-sm visible-xs"><i class="fas fa-bars"></i></div>
           <div class="logo">
-            <a href="">
+            <a href="/">
               <img src="./assets/img/logo/logomain.png" alt="">
             </a>
           </div>
           <div class="mobile_cart visible-sm visible-xs">
-            <a href="./cart.html" class="header__second__cart--icon">
+            <a href="./cart" class="header__second__cart--icon">
               <i class="fas fa-shopping-cart"></i>
               <span id="header__second__cart--notice" class="header__second__cart--notice">3</span>
             </a>
@@ -79,7 +79,7 @@
         </div>
         <div class="col-3 m-auto hidden-sm hidden-xs">
           <div class="item-car clearfix">
-            <a href="./cart.html" class="header__second__cart--icon">
+            <a href="./cart" class="header__second__cart--icon">
               <i class="fas fa-shopping-cart"></i>
               <span id="header__second__cart--notice" class="header__second__cart--notice">3</span>
             </a>

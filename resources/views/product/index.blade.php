@@ -421,24 +421,24 @@
                     <div class="row row-product" id="products">
                     </div>
                     <div class="row">
-    @foreach ($products as $product)
-        @php
-            $images = json_decode($product->images, true);
-            $firstImage = !empty($images) && is_array($images) ? $images[0] : 'default.jpg';
-        @endphp
+                        @foreach ($products as $product)
+                        @php
+                        $images = json_decode($product->images, true);
+                        $firstImage = !empty($images) && is_array($images) ? $images[0] : 'default.jpg';
+                        @endphp
 
-        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
-            <div class="card">
-                <img src="{{ asset('storage/' . $firstImage) }}" class="card-img-top" alt="{{ $product->product_name }}">
-                <div class="card-body">
-                    <h5 class="card-title">{{ $product->product_name }}</h5>
-                    <p class="card-text">{{ $product->description }}</p>
-                    <a href="{{ url('product/detail/' . $product->id) }}" class="btn btn-primary">Xem chi tiết</a>
-                </div>
-            </div>
-        </div>
-    @endforeach
-</div>
+                        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="{{ asset('storage/' . $firstImage) }}" class="card-img-top" alt="{{ $product->product_name }}">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ $product->product_name }}</h5>
+                                    <p class="card-text">{{ $product->description }}</p>
+                                    <a href="{{ url('product/detail/' . $product->id) }}" class="btn btn-primary">Xem chi tiết</a>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
 
                     <div class="loadmore">
                         <a style="cursor: pointer;" class="loadmore-btn">Tải thêm</a>
@@ -447,7 +447,7 @@
 
                 </div>
 
-                
+
             </div>
         </div>
     </div>
