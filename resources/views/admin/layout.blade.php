@@ -7,6 +7,7 @@
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
+@yield('scripts')
 
 <body>
 
@@ -38,6 +39,9 @@
                 </li>
                 <li>
                     <a href="{{ route('admin.users.index') }}" class="nav-link text-white">📂Quản lý người dùng</a
+                </li>
+                <li>
+                    <a href="{{ route('admin.orders.index') }}" class="nav-link text-white">📂Quản lý đơn hàng</a>
                 </li>
                 <li>
                     <a href="{{ route('admin.coupon.index') }}" class="nav-link text-white">📂Quản lý mã giảm giá</a>

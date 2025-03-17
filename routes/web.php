@@ -13,16 +13,25 @@ use App\Http\Controllers\BannerController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\PostCategoryController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderItemController;
+use App\Http\Controllers\AdminOrderController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\LoginController;
+
 Route::get('/', function () {
     return view('welcome');
 });
 
 // Group Admin Routes
-Route::prefix('admin')->middleware(['auth'])->group(function () {
+use App\Http\Middleware\AdminMiddleware;
+
+Route::prefix('admin')->middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+
+
 
     // Categories
     Route::prefix('categories')->group(function () {
@@ -52,7 +61,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::put('/{id}', [ProductController::class, 'update'])->name('admin.product.update');
         Route::delete('/{id}', [ProductController::class, 'destroy'])->name('admin.product.destroy');
     });
-    
+
     Route::prefix('sizes')->group(function () {
         Route::get('/', [SizeController::class, 'index'])->name('admin.size.index');
         Route::get('/create', [SizeController::class, 'create'])->name('admin.size.create');
@@ -69,7 +78,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::put('/{id}', [ProductSizeColorController::class, 'update'])->name('admin.product_size_color.update');
         Route::delete('/{id}', [ProductSizeColorController::class, 'destroy'])->name('admin.product_size_color.destroy');
     });
-    
+
     Route::prefix('users')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('admin.users.index');
         Route::get('/create', [UserController::class, 'create'])->name('admin.users.create');
@@ -80,43 +89,51 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     });
 
 
-Route::prefix('coupon')->group(function () {
-    Route::get('/', [CouponController::class, 'index'])->name('admin.coupon.index');
-    Route::get('/create', [CouponController::class, 'create'])->name('admin.coupon.create');
-    Route::post('/', [CouponController::class, 'store'])->name('admin.coupon.store');
-    Route::get('/{id}/edit', [CouponController::class, 'edit'])->name('admin.coupon.edit');
-    Route::put('/{id}', [CouponController::class, 'update'])->name('admin.coupon.update');
-    Route::delete('/{id}', [CouponController::class, 'destroy'])->name('admin.coupon.destroy');
-});
+    Route::prefix('coupon')->group(function () {
+        Route::get('/', [CouponController::class, 'index'])->name('admin.coupon.index');
+        Route::get('/create', [CouponController::class, 'create'])->name('admin.coupon.create');
+        Route::post('/', [CouponController::class, 'store'])->name('admin.coupon.store');
+        Route::get('/{id}/edit', [CouponController::class, 'edit'])->name('admin.coupon.edit');
+        Route::put('/{id}', [CouponController::class, 'update'])->name('admin.coupon.update');
+        Route::delete('/{id}', [CouponController::class, 'destroy'])->name('admin.coupon.destroy');
+    });
 
 
-Route::prefix('banner')->group(function () {
-    Route::get('/', [BannerController::class, 'index'])->name('admin.banner.index');
-    Route::get('/create', [BannerController::class, 'create'])->name('admin.banner.create');
-    Route::post('/', [BannerController::class, 'store'])->name('admin.banner.store');
-    Route::get('/{banner}/edit', [BannerController::class, 'edit'])->name('admin.banner.edit');
-    Route::put('/{banner}', [BannerController::class, 'update'])->name('admin.banner.update');
-    Route::delete('/{banner}', [BannerController::class, 'destroy'])->name('admin.banner.destroy');
-});
+    Route::prefix('banner')->group(function () {
+        Route::get('/', [BannerController::class, 'index'])->name('admin.banner.index');
+        Route::get('/create', [BannerController::class, 'create'])->name('admin.banner.create');
+        Route::post('/', [BannerController::class, 'store'])->name('admin.banner.store');
+        Route::get('/{banner}/edit', [BannerController::class, 'edit'])->name('admin.banner.edit');
+        Route::put('/{banner}', [BannerController::class, 'update'])->name('admin.banner.update');
+        Route::delete('/{banner}', [BannerController::class, 'destroy'])->name('admin.banner.destroy');
+    });
 
-Route::prefix('blog')->group(function () {
-    Route::get('/', [BlogController::class, 'index'])->name('admin.blog.index');
-    Route::get('/create', [BlogController::class, 'create'])->name('admin.blog.create');
-    Route::post('/store', [BlogController::class, 'store'])->name('admin.blog.store');
-    Route::get('/{blog}/edit', [BlogController::class, 'edit'])->name('admin.blog.edit');
-    Route::put('/{blog}', [BlogController::class, 'update'])->name('admin.blog.update');
-    Route::delete('/{blog}', [BlogController::class, 'destroy'])->name('admin.blog.destroy');
-});
-// Blog Categories Routes
-Route::prefix('post-category')->group(function () {
-    Route::get('/', [PostCategoryController::class, 'index'])->name('admin.post_category.index');
-    Route::get('/create', [PostCategoryController::class, 'create'])->name('admin.post_category.create');
-    Route::post('/', [PostCategoryController::class, 'store'])->name('admin.post_category.store');
-    Route::get('/{id}/edit', [PostCategoryController::class, 'edit'])->name('admin.post_category.edit');
-    Route::put('/{id}', [PostCategoryController::class, 'update'])->name('admin.post_category.update');
-    Route::delete('/{id}', [PostCategoryController::class, 'destroy'])->name('admin.post_category.destroy');
-});
+    Route::prefix('blog')->group(function () {
+        Route::get('/', [BlogController::class, 'index'])->name('admin.blog.index');
+        Route::get('/create', [BlogController::class, 'create'])->name('admin.blog.create');
+        Route::post('/store', [BlogController::class, 'store'])->name('admin.blog.store');
+        Route::get('/{blog}/edit', [BlogController::class, 'edit'])->name('admin.blog.edit');
+        Route::put('/{blog}', [BlogController::class, 'update'])->name('admin.blog.update');
+        Route::delete('/{blog}', [BlogController::class, 'destroy'])->name('admin.blog.destroy');
+    });
+    // Blog Categories Routes
+    Route::prefix('post-category')->group(function () {
+        Route::get('/', [PostCategoryController::class, 'index'])->name('admin.post_category.index');
+        Route::get('/create', [PostCategoryController::class, 'create'])->name('admin.post_category.create');
+        Route::post('/', [PostCategoryController::class, 'store'])->name('admin.post_category.store');
+        Route::get('/{id}/edit', [PostCategoryController::class, 'edit'])->name('admin.post_category.edit');
+        Route::put('/{id}', [PostCategoryController::class, 'update'])->name('admin.post_category.update');
+        Route::delete('/{id}', [PostCategoryController::class, 'destroy'])->name('admin.post_category.destroy');
+    });
 
+    Route::prefix('orders')->group(function () {
+        Route::get('/', [AdminOrderController::class, 'index'])->name('admin.orders.index');
+        Route::get('/{order}', [AdminOrderController::class, 'show'])->name('admin.orders.show');
+        Route::put('/{order}/cancel', [AdminOrderController::class, 'cancel'])->name('admin.orders.cancel');
+        Route::delete('/{order}', [AdminOrderController::class, 'destroy'])->name('admin.orders.destroy');
+        Route::get('/orders/{order}/edit', [AdminOrderController::class, 'edit'])->name('admin.orders.edit');
+        Route::put('/orders/{order}', [AdminOrderController::class, 'update'])->name('admin.orders.update');
+    });
 });
 
 // Authentication Routes
@@ -125,6 +142,7 @@ Auth::routes();
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+
 use App\Http\Controllers\Auth\RegisterController;
 
 
@@ -142,3 +160,24 @@ Route::delete('/cart/{id}', [CartController::class, 'destroy'])->name('cart.dest
 Route::delete('/cart/clear', [CartController::class, 'clearCart'])->name('cart.clear');
 
 Route::put('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+
+
+Route::middleware(['auth'])->group(function () {
+    // Trang thanh toán
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+
+    // Xử lý đặt hàng (COD, VNPay)
+    Route::post('/checkout', [CheckoutController::class, 'placeOrder'])->name('checkout.store');
+
+    // Chuyển hướng sang VNPay
+    Route::post('/checkout/vnpay', [CheckoutController::class, 'createVNPayPayment'])->name('checkout.vnpay');
+
+    // Xử lý kết quả từ VNPay sau khi thanh toán xong
+    Route::get('/checkout/vnpay-return', [CheckoutController::class, 'vnpayReturn'])->name('checkout.vnpay.return');
+});
+Route::middleware(['auth'])->group(function () {
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+    Route::put('/orders/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+    Route::delete('/orders/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
+});

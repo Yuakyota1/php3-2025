@@ -33,7 +33,7 @@
                   <a href="">Địa chỉ của tôi</a>
                 </li>
                 <li class="nav-item__first-item">
-                  <a href="">Đơn mua</a>
+                  <a href="/orders">Đơn mua</a>
                 </li>
                 <form class="nav-item__first-item" id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                   @csrf

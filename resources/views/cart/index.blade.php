@@ -4,15 +4,12 @@
 <div class="container py-4">
     <h2 class="mb-4 text-center">🛒 Giỏ hàng của bạn</h2>
 
-    <div class="clearfix">
-
-    </div> <!-- Đẩy nội dung xuống -->
+    <div class="clearfix"></div> <!-- Đẩy nội dung xuống -->
 
     @if (empty($carts) || (is_object($carts) && $carts->isEmpty()))
     <div class="d-flex justify-content-center mt-4">
         <div class="text-center">
             Giỏ hàng trống. <br>
-
             <a href="{{ url('/product') }}" class="btn btn-primary mt-2">🛍️ Tiếp tục mua sắm</a>
         </div>
     </div>
@@ -32,8 +29,6 @@
                     <th>❌</th>
                 </tr>
             </thead>
-
-
             <tbody>
                 @foreach ($carts as $cart)
                 <tr>
@@ -42,7 +37,8 @@
                     <td>{{ is_array($cart) ? ($cart['size'] ?? 'Không có') : $cart->size }}</td>
                     <td>{{ is_array($cart) ? $cart['color'] : $cart->color }}</td>
                     <td>
-                        <form action="{{ route('cart.update', $cart->id) }}" method="POST" class="d-flex flex-column align-items-center">
+                        @if(Auth::check())
+                        <form action="{{ route('cart.update', $cart->id ) }}" method="POST" class="d-flex flex-column align-items-center">
                             @csrf
                             @method('PUT')
                             <input type="number" name="quantity" value="{{ is_array($cart) ? $cart['quantity'] : $cart->quantity }}"
@@ -55,6 +51,9 @@
 
                             <button type="submit" class="btn btn-outline-primary btn-sm mt-2">🔄</button>
                         </form>
+                        @else
+                        <span>Vui lòng <a href="{{ route('login') }}">đăng nhập</a> để cập nhật số lượng</span>
+                        @endif
                     </td>
                     <td>{{ number_format(is_array($cart) ? $cart['price'] : $cart->price, 0, ',', '.') }} VND</td>
                     <td>{{ number_format(is_array($cart) ? $cart['total_price'] : $cart->total_price, 0, ',', '.') }} VND</td>
@@ -75,7 +74,7 @@
 
     <div class="d-flex justify-content-between mt-3">
         <a href="{{ url('/') }}" class="btn btn-secondary">🛍️ Tiếp tục mua sắm</a>
-        <a href="" class="btn btn-success">💳 Thanh toán</a>
+        <a href="{{ route('checkout.index') }}" class="btn btn-success">💳 Thanh toán</a>
     </div>
     @endif
 </div>
