@@ -17,6 +17,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderItemController;
 use App\Http\Controllers\AdminOrderController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\LoginController;
@@ -134,6 +135,7 @@ Route::prefix('admin')->middleware(['auth', AdminMiddleware::class])->group(func
         Route::get('/orders/{order}/edit', [AdminOrderController::class, 'edit'])->name('admin.orders.edit');
         Route::put('/orders/{order}', [AdminOrderController::class, 'update'])->name('admin.orders.update');
     });
+    
 });
 
 // Authentication Routes
@@ -176,8 +178,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/checkout/vnpay-return', [CheckoutController::class, 'vnpayReturn'])->name('checkout.vnpay.return');
 });
 Route::middleware(['auth'])->group(function () {
+    Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+    
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::put('/orders/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
     Route::delete('/orders/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
 });
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/revenue-data', [AdminOrderController::class, 'getRevenueData'])->name('revenue.data');
+});
+

@@ -13,10 +13,10 @@ class ProductController extends Controller
     // Hiển thị danh sách sản phẩm
     public function index()
     {
-        $products = Product::all();
+        $products = Product::paginate(1); // Hiển thị 10 sản phẩm mỗi trang
         return view('admin.product.index', compact('products'));
     }
-
+    
 
     public function shop()
     {
@@ -24,9 +24,10 @@ class ProductController extends Controller
         return view('product.index', compact('products'));
     }
     public function show($id) {
-        $product = Product::with(['sizeColors', 'subCategory'])->findOrFail($id);
+        $product = Product::with(['sizeColors', 'subCategory', 'comments.user'])->findOrFail($id);
         return view('product.detail', compact('product'));
     }
+    
     
     // Hiển thị form tạo sản phẩm
     public function create()

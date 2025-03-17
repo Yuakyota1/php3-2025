@@ -72,7 +72,7 @@
           </div>
         </div>
         <div class="col-lg-6 m-auto pdt15">
-          <form class="example" action="./Product.html">
+          <form class="example" action="/Product">
             <input type="text" class="input-search" placeholder="Tìm kiếm.." name="search">
             <button type="submit" class="search-btn"><i class="fa fa-search"></i></button>
           </form>

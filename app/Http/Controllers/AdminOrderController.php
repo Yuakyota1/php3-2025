@@ -8,6 +8,7 @@ use App\Mail\OrderStatusUpdated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OrderConfirmationMail;
+use Illuminate\Support\Facades\DB;
 class AdminOrderController extends Controller
 {
     // Hiển thị danh sách đơn hàng
@@ -45,7 +46,7 @@ class AdminOrderController extends Controller
     // Hủy đơn hàng
     public function cancel(Order $order)
     {
-        if ($order->status === 'pending') {
+        if ($order->status === 'pending' || $order->status === 'unpaid') {
             $order->update(['status' => 'canceled']);
             return redirect()->back()->with('success', 'Đơn hàng đã bị hủy.');
         }
@@ -61,5 +62,43 @@ class AdminOrderController extends Controller
         }
         return redirect()->back()->with('error', 'Chỉ có thể xóa đơn hàng đã hủy.');
     }
+    public function getRevenueData()
+    {
+        // Thống kê doanh thu
+        $orders = Order::selectRaw('DATE(created_at) as date, MONTH(created_at) as month, YEAR(created_at) as year, SUM(total_price) as revenue')
+            ->where('status', 'paid') // Chỉ lấy đơn hàng đã thanh toán
+            ->groupBy('date', 'month', 'year')
+            ->orderBy('date')
+            ->get();
+    
+        // Thống kê số lượng sản phẩm
+        $quantities = DB::table('product_size_colors')
+            ->selectRaw('DATE(created_at) as date, MONTH(created_at) as month, YEAR(created_at) as year, SUM(quantity) as total_quantity')
+            ->groupBy('date', 'month', 'year')
+            ->orderBy('date')
+            ->get();
+    
+        // Tạo mảng dữ liệu
+        $labels = [];
+        $revenue = [];
+        $quantity = [];
+    
+        foreach ($orders as $order) {
+            $labels[] = "{$order->date} (Tháng {$order->month}/{$order->year})";
+            $revenue[] = $order->revenue;
+        }
+    
+        foreach ($quantities as $q) {
+            $quantity[] = $q->total_quantity;
+        }
+    
+        return response()->json([
+            'labels' => $labels,
+            'revenue' => $revenue,
+            'quantity' => $quantity
+        ]);
+    }
+    
+    
 }
 

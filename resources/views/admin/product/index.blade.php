@@ -1,6 +1,9 @@
 @extends('admin.layout')
 
 @section('content')
+
+
+
 <div class="container">
     <h2 class="text-center">Danh sách sản phẩm</h2>
     <a href="{{ route('admin.product.create') }}" class="btn btn-primary mb-3">Thêm sản phẩm</a>
@@ -54,6 +57,11 @@
         </tbody>
     </table>
 </div>
+<div class="d-flex justify-content-center">
+    {{ $products->links('vendor.pagination.bootstrap-5') }}
+</div>
+
+@endsection
 
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -118,6 +126,4 @@
         });
     });
 </script>
-@endsection
-
 @endsection

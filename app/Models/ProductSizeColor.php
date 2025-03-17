@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProductSizeColor extends Model
 {
-    protected $table = 'product_size_colors'; // Đúng tên bảng
+    protected $table = 'product_size_colors';
     protected $fillable = ['idProduct', 'color', 'idSize', 'quantity', 'price'];
 
     public function product()

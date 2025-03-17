@@ -40,7 +40,7 @@
 
                         <a href="{{ route('admin.orders.edit', $order->id) }}" class="btn btn-info btn-sm">Chỉnh sửa</a>
 
-                        @if ($order->status == 'pending')
+                        @if ($order->status == 'pending' || $order->status == 'unpaid')
                             <form action="{{ route('admin.orders.cancel', $order->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('PUT')

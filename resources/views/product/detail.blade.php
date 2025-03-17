@@ -16,9 +16,64 @@
         h2, h4, h5 { font-size: 1.8rem; }
         p, label, select, input { font-size: 1.2rem; }
         #productPrice { font-size: 1.5rem; }
+        
+        /* Styling for comment form */
+        .comment-box {
+            border-radius: 10px;
+            background: #f8f9fa;
+            padding: 15px;
+            margin-left: 280px;
+            margin-right: 100px;
+        }
+        .comment-box strong {
+            color: #007bff;
+        }
+        .comment-box img {
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .comment-form {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-left: 280px;
+            margin-right: 100px;
+        }
+        .comment-form textarea {
+            resize: none;
+            border-radius: 5px;
+        }
+        .rating input { display: none; }
+        .rating label {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: gray;
+        }
+        .rating input:checked ~ label {
+            color: gold;
+        }
     </style>
 </head>
 <body>
+<!-- Modal thông báo -->
+<div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="notificationModalLabel">Thông báo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="notificationMessage">Nội dung thông báo.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
     @include('layout.header')
 
     <div class="container py-4">
@@ -27,8 +82,8 @@
             <div class="col-md-6">
                 <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
                     <div class="carousel-inner">
-                        @php $images = json_decode($product->images, true); @endphp
-                        @if (!empty($images) && is_array($images))
+                        @php $images = json_decode($product->images, true) ?? []; @endphp
+                        @if (!empty($images))
                             @foreach ($images as $key => $image)
                                 <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
                                     <img src="{{ asset('storage/' . $image) }}" class="d-block w-100 img-fluid rounded" alt="{{ $product->product_name }}">
@@ -56,9 +111,11 @@
                     <label for="sizeSelect" class="form-label">Chọn kích thước:</label>
                     <select id="sizeSelect" class="form-control">
                         <option value="">-- Chọn kích thước --</option>
-                        @foreach ($product->sizeColors->unique('idSize') as $sizeColor)
-                            <option value="{{ $sizeColor->idSize }}">{{ $sizeColor->size->size_name ?? 'Không xác định' }}</option>
-                        @endforeach
+                        @if (!empty($product->sizeColors) && is_iterable($product->sizeColors))
+                            @foreach ($product->sizeColors->unique('idSize') as $sizeColor)
+                                <option value="{{ $sizeColor->idSize }}">{{ $sizeColor->size->size_name ?? 'Không xác định' }}</option>
+                            @endforeach
+                        @endif
                     </select>
                 </div>
 
@@ -81,10 +138,78 @@
         </div>
     </div>
 
+    @if (!empty($product->comments) && is_iterable($product->comments))
+        @foreach($product->comments as $comment)
+            <div class="comment-box border p-3 my-2">
+                <strong>{{ $comment->user->name ?? 'Khách' }} 
+                @if(isset($comment->rating))
+    <div class="rating-display">
+        @for ($i = 1; $i <= 5; $i++)
+            <span class="{{ $i <= $comment->rating ? 'text-warning' : 'text-muted' }}">★</span>
+        @endfor
+    </div>
+@endif
+
+                </strong> thời gian
+                <span class="text-muted">{{ $comment->created_at->diffForHumans() }}</span>
+                <p>{{ $comment->content }}</p>
+                
+                @if ($comment->image)
+                    <img src="{{ asset('storage/' . $comment->image) }}" width="100">
+                @endif
+                
+                @if (Auth::id() === $comment->user_id)
+                <form action="{{ route('comments.destroy', $comment->id) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                </form>
+                @endif
+            </div>
+        @endforeach
+    @endif
+
+    @if (Auth::check() && !$product->comments->contains('user_id', Auth::id()))
+    <div class="comment-form mt-4">
+        <h4>Viết bình luận</h4>
+        <form action="{{ route('comments.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <input type="hidden" name="product_id" value="{{ $product->id }}">
+
+            <div class="mb-3">
+                <label class="form-label">Đánh giá sản phẩm:</label>
+                <div class="rating d-flex">
+                    <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
+                    <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+                    <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+                    <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+                    <input type="radio" id="star1" name="rating" value="1" checked><label for="star1">★</label>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Bình luận:</label>
+                <textarea name="content" class="form-control" rows="3" required></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Tải ảnh lên (tùy chọn):</label>
+                <input type="file" name="image" class="form-control">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Gửi bình luận</button>
+        </form>
+    </div>
+    @endif
+
     @include('layout.footer')
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+   
 
     <script>
     $(document).ready(function() {
@@ -158,6 +283,50 @@
             });
         });
     });
+    function showPopup(message) {
+    $('#notificationMessage').text(message);
+    $('#notificationModal').modal('show');
+}
+
+$(document).ready(function() {
+    @if(session('success'))
+        showPopup("{{ session('success') }}");
+    @endif
+
+    @if(session('error'))
+        showPopup("{{ session('error') }}");
+    @endif
+
+    $('#addToCartBtn').click(function() {
+        let size = $('#sizeSelect').val();
+        let color = $('#colorSelect').val();
+
+        if (!size || !color) {
+            showPopup('Vui lòng chọn kích thước và màu sắc!');
+            return;
+        }
+
+        $.ajax({
+            url: "{{ route('cart.store') }}",
+            type: "POST",
+            data: {
+                _token: "{{ csrf_token() }}",
+                product_id: "{{ $product->id }}",
+                size: size,
+                color: color,
+                quantity: $('#quantityInput').val()
+            },
+            success: function(response) {
+                showPopup(response.message);
+            },
+            error: function() {
+                showPopup('Có lỗi xảy ra!');
+            }
+        });
+    });
+});
+
 </script>
+
 </body>
 </html>
