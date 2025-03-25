@@ -83,7 +83,8 @@ class CheckoutController extends Controller
 
     $total = $carts->sum(fn($cart) => $cart->price * $cart->quantity);
     $shippingFee = ($total >= 500000) ? 0 : 30000;
-    $payableTotal = $total + $shippingFee - $request->input('discount_amount', 0);
+    $discountAmount = $request->input('discount_amount', 0); // ✅ Nhận giá trị giảm giá từ form
+    $payableTotal = max(0, $total + $shippingFee - $discountAmount);
 
     // Tạo đơn hàng
     $order = Order::create([
@@ -95,6 +96,7 @@ class CheckoutController extends Controller
         'address'        => $request->address,
         'note'           => $request->note,
         'total_price'    => $payableTotal,
+        'discount_applied' => $discountAmount, // ✅ Lưu giảm giá vào DB
         'payment_method' => $request->payment,
         'status'         => ($request->payment === 'vnpay') ? 'unpaid' : 'pending',
     ]);
@@ -122,6 +124,7 @@ class CheckoutController extends Controller
 
     return redirect()->route('checkout.index')->with('success', 'Đặt hàng thành công!');
 }
+
 public function vnpayReturn(Request $request)
 {
     $vnp_HashSecret = env('VNP_HASH_SECRET'); // Lấy key bảo mật từ .env

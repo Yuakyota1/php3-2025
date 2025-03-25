@@ -27,7 +27,7 @@
                 @endauth
 
                 <li class="nav-item__first-item">
-                  <a href="">Tài khoản của tôi</a>
+                  <a href="/profile">Tài khoản của tôi</a>
                 </li>
                 <li class="nav-item__first-item">
                   <a href="">Địa chỉ của tôi</a>
@@ -63,11 +63,11 @@
           <div class="mobile_cart visible-sm visible-xs">
             <a href="./cart" class="header__second__cart--icon">
               <i class="fas fa-shopping-cart"></i>
-              <span id="header__second__cart--notice" class="header__second__cart--notice">3</span>
+              <span id="header__second__cart--notice" class="header__second__cart--notice"></span>
             </a>
-            <a href="./listlike.html" class="header__second__like--icon">
+            <a href="./favorites" class="header__second__like--icon">
               <i class="far fa-heart"></i>
-              <span id="header__second__like--notice" class="header__second__like--notice">3</span>
+              <span id="header__second__like--notice" class="header__second__like--notice"></span>
             </a>
           </div>
         </div>
@@ -85,7 +85,7 @@
             </a>
           </div>
           <div class="item-like clearfix">
-            <a href="./listlike.html" class="header__second__like--icon">
+            <a href="./favorites" class="header__second__like--icon">
               <i class="far fa-heart"></i>
               <span id="header__second__like--notice" class="header__second__like--notice">3</span>
             </a>

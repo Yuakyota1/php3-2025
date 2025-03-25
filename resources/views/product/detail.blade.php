@@ -210,85 +210,86 @@
 </html>
 
    
-
-    <script>
-    $(document).ready(function() {
-        let allData = @json($product->sizeColors->toArray());
-        let basePrice = 0;
-
-        $('#sizeSelect').change(function() {
-            let selectedSize = $(this).val();
-            let colors = allData.filter(item => item.idSize == selectedSize);
-            
-            $('#colorSelect').html('<option value="">-- Chọn màu --</option>');
-            colors.forEach(item => {
-                $('#colorSelect').append(`<option value="${item.color}" data-price="${item.price}">${item.color}</option>`);
-            });
-
-            $('#colorSelect').prop('disabled', colors.length === 0);
-            $('#productPrice').text('0 VND');
-            basePrice = 0;
-        });
-
-        $('#colorSelect').change(function() {
-            basePrice = $(this).find(':selected').data('price') || 0;
-            updateTotalPrice();
-        });
-
-        $('#quantityInput').on('input', function() {
-            updateTotalPrice();
-        });
-
-        function updateTotalPrice() {
-            let quantity = parseInt($('#quantityInput').val()) || 1;
-            let totalPrice = basePrice * quantity;
-            $('#productPrice').text(new Intl.NumberFormat('vi-VN').format(totalPrice) + ' VND');
-        }
-
-        $('#addToCartBtn').click(function() {
-            let productId = "{{ $product->id }}";
-            let size = $('#sizeSelect').val();
-            let color = $('#colorSelect').val();
-            let quantity = $('#quantityInput').val();
-            let price = basePrice;
-            let name = "{{ $product->product_name }}";
-            let image = "{{ asset('storage/' . (isset($images[0]) ? $images[0] : 'default.jpg')) }}";
-
-            if (!size || !color) {
-                alert('Vui lòng chọn kích thước và màu sắc!');
-                return;
-            }
-
-            $.ajax({
-                url: "{{ route('cart.store') }}",
-                type: "POST",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    product_id: productId,
-                    size: size,
-                    color: color,
-                    name: name,
-                    quantity: quantity,
-                    price: price,
-                    total_price: price * quantity,
-                    image: image
-                },
-                success: function(response) {
-                    alert(response.message);
-                    window.location.href = "{{ route('cart.index') }}";
-                },
-                error: function(xhr) {
-                    alert('Có lỗi xảy ra!');
-                }
-            });
-        });
-    });
-    function showPopup(message) {
-    $('#notificationMessage').text(message);
-    $('#notificationModal').modal('show');
-}
-
+<script>
 $(document).ready(function() {
+    let allData = @json($product->sizeColors->toArray());
+    let basePrice = 0;
+
+    $('#sizeSelect').change(function() {
+        let selectedSize = $(this).val();
+        let colors = allData.filter(item => item.idSize == selectedSize);
+        
+        $('#colorSelect').html('<option value="">-- Chọn màu --</option>');
+        colors.forEach(item => {
+            $('#colorSelect').append(`<option value="${item.color}" data-price="${item.price}">${item.color}</option>`);
+        });
+
+        $('#colorSelect').prop('disabled', colors.length === 0);
+        $('#productPrice').text('0 VND');
+        basePrice = 0;
+    });
+
+    $('#colorSelect').change(function() {
+        basePrice = $(this).find(':selected').data('price') || 0;
+        updateTotalPrice();
+    });
+
+    $('#quantityInput').on('input', function() {
+        updateTotalPrice();
+    });
+
+    function updateTotalPrice() {
+        let quantity = parseInt($('#quantityInput').val()) || 1;
+        let totalPrice = basePrice * quantity;
+        $('#productPrice').text(new Intl.NumberFormat('vi-VN').format(totalPrice) + ' VND');
+    }
+
+    function showPopup(message) {
+        $('#notificationMessage').text(message);
+        $('#notificationModal').modal('show');
+    }
+
+    $('#addToCartBtn').click(function() {
+    let size = $('#sizeSelect').val();
+    let color = $('#colorSelect').val();
+    let quantity = $('#quantityInput').val();
+    let productId = "{{ $product->id }}";
+    let name = "{{ $product->product_name }}";
+    let image = "{{ asset('storage/' . (isset($images[0]) ? $images[0] : 'default.jpg')) }}";
+
+    if (!size || !color) {
+        showPopup('Vui lòng chọn kích thước và màu sắc!');
+        return;
+    }
+
+    $.ajax({
+        url: "{{ route('cart.store') }}",
+        type: "POST",
+        data: {
+            _token: "{{ csrf_token() }}",
+            product_id: productId,
+            size: size,
+            color: color,
+            name: name,
+            quantity: quantity,
+            price: basePrice,
+            total_price: basePrice * quantity,
+            image: image
+        },
+        success: function(response) {
+    showPopup(response.message); // Hiển thị popup
+    setTimeout(function() {
+        window.location.href = "{{ route('cart.index') }}"; // Chuyển trang sau 2 giây
+    }, 2000);
+
+        },
+        error: function() {
+            showPopup('Có lỗi xảy ra!');
+        }
+    });
+});
+
+
     @if(session('success'))
         showPopup("{{ session('success') }}");
     @endif
@@ -296,36 +297,7 @@ $(document).ready(function() {
     @if(session('error'))
         showPopup("{{ session('error') }}");
     @endif
-
-    $('#addToCartBtn').click(function() {
-        let size = $('#sizeSelect').val();
-        let color = $('#colorSelect').val();
-
-        if (!size || !color) {
-            showPopup('Vui lòng chọn kích thước và màu sắc!');
-            return;
-        }
-
-        $.ajax({
-            url: "{{ route('cart.store') }}",
-            type: "POST",
-            data: {
-                _token: "{{ csrf_token() }}",
-                product_id: "{{ $product->id }}",
-                size: size,
-                color: color,
-                quantity: $('#quantityInput').val()
-            },
-            success: function(response) {
-                showPopup(response.message);
-            },
-            error: function() {
-                showPopup('Có lỗi xảy ra!');
-            }
-        });
-    });
 });
-
 </script>
 
 </body>

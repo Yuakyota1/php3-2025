@@ -17,30 +17,52 @@
         <!-- Tên sản phẩm -->
         <div class="mb-3">
             <label for="product_name" class="form-label">Tên sản phẩm</label>
-            <input type="text" class="form-control" id="product_name" name="product_name" required>
+            <input type="text" class="form-control @error('product_name') is-invalid @enderror" 
+                   id="product_name" name="product_name" value="{{ old('product_name') }}" >
+            @error('product_name')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
         <!-- Danh mục con -->
         <div class="mb-3">
             <label for="sub_category_id" class="form-label">Danh mục con</label>
-            <select class="form-control" id="sub_category_id" name="sub_category_id" required>
+            <select class="form-control @error('sub_category_id') is-invalid @enderror" 
+                    id="sub_category_id" name="sub_category_id" >
                 <option value="">Chọn danh mục con</option>
                 @foreach ($subCategories as $subCategory)
-                    <option value="{{ $subCategory->id }}">{{ $subCategory->subcategory_name }}</option>
+                    <option value="{{ $subCategory->id }}" 
+                        {{ old('sub_category_id') == $subCategory->id ? 'selected' : '' }}>
+                        {{ $subCategory->subcategory_name }}
+                    </option>
                 @endforeach
             </select>
+            @error('sub_category_id')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
         <!-- Mô tả -->
         <div class="mb-3">
             <label for="description" class="form-label">Mô tả</label>
-            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+            <textarea class="form-control @error('description') is-invalid @enderror" 
+                      id="description" name="description" rows="3">{{ old('description') }}</textarea>
+            @error('description')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
         <!-- Ảnh sản phẩm -->
         <div class="mb-3">
             <label for="images" class="form-label">Hình ảnh sản phẩm</label>
-            <input type="file" class="form-control" id="images" name="images[]" multiple accept="image/*">
+            <input type="file" class="form-control @error('images') is-invalid @enderror" 
+                   id="images" name="images[]" multiple accept="image/*">
+            @error('images')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+            @error('images.*')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
         <!-- Nút Submit -->

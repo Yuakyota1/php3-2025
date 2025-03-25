@@ -18,6 +18,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderItemController;
 use App\Http\Controllers\AdminOrderController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\LoginController;
@@ -177,10 +178,16 @@ Route::middleware(['auth'])->group(function () {
     // Xử lý kết quả từ VNPay sau khi thanh toán xong
     Route::get('/checkout/vnpay-return', [CheckoutController::class, 'vnpayReturn'])->name('checkout.vnpay.return');
 });
+
 Route::middleware(['auth'])->group(function () {
     Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
     
+    Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+    Route::post('/favorites', [FavoriteController::class, 'store'])->name('favorites.store');
+    Route::delete('/favorites/{id}', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
+
+
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::put('/orders/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
@@ -189,4 +196,12 @@ Route::middleware(['auth'])->group(function () {
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/revenue-data', [AdminOrderController::class, 'getRevenueData'])->name('revenue.data');
 });
+Route::post('/apply-coupon', [CouponController::class, 'apply']);
 
+
+Route::middleware(['auth'])->group(function () {
+    // Profile của user đăng nhập
+    Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
+    Route::get('/profile/edit', [UserController::class, 'editProfile'])->name('user.edit');
+    Route::put('/profile/update', [UserController::class, 'updateProfile'])->name('user.update');
+});

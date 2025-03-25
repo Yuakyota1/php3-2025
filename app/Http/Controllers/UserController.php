@@ -74,4 +74,37 @@ class UserController extends Controller
 
         return redirect()->route('admin.users.index')->with('success', 'Người dùng đã được xóa.');
     }
+    public function profile()
+{
+    return view('user.profile');
+}
+
+public function editProfile()
+{
+    $user = auth()->user(); // Lấy user đang đăng nhập
+    return view('profile.edit', compact('user'));
+}
+
+public function updateProfile(Request $request)
+{
+    $user = auth()->user();
+
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+        'password' => 'nullable|string|min:6',
+    ]);
+
+    $data = $request->only(['name', 'email']);
+    if ($request->filled('password')) {
+        $data['password'] = Hash::make($request->password);
+    }
+
+    $user->update($data);
+
+    return redirect()->route('user.profile')->with('success', 'Thông tin đã được cập nhật.');
+}
+
+
+
 }

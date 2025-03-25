@@ -425,6 +425,7 @@
                         @php
                         $images = json_decode($product->images, true);
                         $firstImage = !empty($images) && is_array($images) ? $images[0] : 'default.jpg';
+                        $isFavorite = auth()->check() && auth()->user()->favorites->contains('product_id', $product->id);
                         @endphp
 
                         <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
@@ -434,12 +435,45 @@
                                     <h5 class="card-title">{{ $product->product_name }}</h5>
                                     <p class="card-text">{{ $product->description }}</p>
                                     <a href="{{ url('product/detail/' . $product->id) }}" class="btn btn-primary">Xem chi tiết</a>
+                                    @auth
+                                    <form action="{{ route('favorites.store') }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                        <button type="submit" class="btn btn-outline-danger">
+                                            <i class="fa {{ $isFavorite ? 'fa-heart' : 'fa-heart-o' }}"></i> Yêu thích
+                                        </button>
+                                    </form>
+                                    @endauth
+
                                 </div>
                             </div>
                         </div>
                         @endforeach
                     </div>
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function() {
+                            document.querySelectorAll('.favorite-btn').forEach(button => {
+                                button.addEventListener('click', function() {
+                                    let productId = this.getAttribute('data-product-id');
+                                    let isFavorite = this.getAttribute('data-favorite') === 'true';
+                                    let url = isFavorite ? `/favorites/remove/${productId}` : `/favorites/add/${productId}`;
 
+                                    fetch(url, {
+                                            method: isFavorite ? 'DELETE' : 'POST',
+                                            headers: {
+                                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                            }
+                                        }).then(response => response.json())
+                                        .then(data => {
+                                            if (data.success) {
+                                                this.setAttribute('data-favorite', !isFavorite);
+                                                this.innerHTML = `<i class="fa ${!isFavorite ? 'fa-heart' : 'fa-heart-o'}"></i> Yêu thích`;
+                                            }
+                                        });
+                                });
+                            });
+                        });
+                    </script>
                     <div class="loadmore">
                         <a style="cursor: pointer;" class="loadmore-btn">Tải thêm</a>
                     </div>

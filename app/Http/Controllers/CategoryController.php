@@ -24,13 +24,27 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'category_name' => 'required|string|max:255|unique:categories',
+            'category_name' => [
+                'required',
+                'string',
+                'max:255',
+                'unique:categories',
+                'regex:/^[\p{L}0-9\s*]+$/u'
+                // Chỉ cho phép chữ cái, số và khoảng trắng
+            ],
+        ], [
+            'category_name.required' => 'Tên danh mục không được để trống.',
+            'category_name.string' => 'Tên danh mục phải là chuỗi ký tự.',
+            'category_name.max' => 'Tên danh mục không được vượt quá 255 ký tự.',
+            'category_name.unique' => 'Danh mục này đã tồn tại.',
+            'category_name.regex' => 'Tên danh mục chỉ được chứa chữ cái, số và khoảng trắng.',
         ]);
 
         Category::create(['category_name' => $request->category_name]);
 
         return redirect()->route('admin.category.index')->with('success', 'Danh mục đã được tạo.');
     }
+
 
     // Hiển thị form sửa danh mục
     public function edit($id)
@@ -55,9 +69,13 @@ class CategoryController extends Controller
     // Xóa danh mục
     public function destroy($id)
     {
-        $category = Category::findOrFail($id);
-        $category->delete();
+        try {
+            $category = Category::findOrFail($id);
+            $category->delete();
 
-        return redirect()->route('admin.category.index')->with('success', 'Danh mục đã được xóa.');
+            return response()->json(['success' => true, 'message' => 'Danh mục đã được xóa.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Xóa danh mục thất bại!']);
+        }
     }
 }

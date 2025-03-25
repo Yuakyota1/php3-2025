@@ -2,8 +2,6 @@
 
 @section('content')
 
-
-
 <div class="container">
     <h2 class="text-center">Danh sách sản phẩm</h2>
     <a href="{{ route('admin.product.create') }}" class="btn btn-primary mb-3">Thêm sản phẩm</a>
@@ -46,11 +44,7 @@
                 </td>
                 <td>
                     <a href="{{ route('admin.product.edit', $product->id) }}" class="btn btn-warning btn-sm">Sửa</a>
-                    <form action="{{ route('admin.product.destroy', $product->id) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm delete-product">Xóa</button>
-                    </form>
+                    <button class="btn btn-danger btn-sm delete-product" data-id="{{ $product->id }}">Xóa</button>
                 </td>
             </tr>
             @endforeach
@@ -91,10 +85,8 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.delete-product').forEach(button => {
-            button.addEventListener('click', function (e) {
-                e.preventDefault();
-                let form = this.closest('form');
-
+            button.addEventListener('click', function () {
+                let productId = this.getAttribute('data-id');
                 Swal.fire({
                     title: 'Bạn có chắc chắn?',
                     text: 'Hành động này không thể hoàn tác!',
@@ -106,7 +98,21 @@
                     cancelButtonColor: '#3085d6'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        form.submit();
+                        fetch(`{{ url('admin/product') }}/${productId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json'
+                            }
+                        }).then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire('Đã xóa!', 'Sản phẩm đã bị xóa.', 'success');
+                                location.reload();
+                            } else {
+                                Swal.fire('Lỗi!', 'Không thể xóa sản phẩm.', 'error');
+                            }
+                        });
                     }
                 });
             });
