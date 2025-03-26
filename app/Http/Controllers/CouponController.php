@@ -71,22 +71,23 @@ class CouponController extends Controller
             return response()->json(['error' => 'Mã giảm giá không hợp lệ!'], 400);
         }
     
-        $total = (float) $request->total; // Chuyển về kiểu số thực
-        $discount = 0;
+        $total = (float) $request->total; // Chuyển về số thực
+        $discount = 0.0; // Đặt giá trị mặc định là số thực
     
         if ($coupon->type === 'percentage') {
-            $discount = ($total * $coupon->discount) / 100; // Tính giảm giá theo phần trăm
+            $discount = round(($total * $coupon->discount) / 100, 2); // Làm tròn 2 chữ số thập phân
         } else {
-            $discount = $coupon->discount; // Giảm giá cố định
+            $discount = (float) $coupon->discount; // Đảm bảo là số thực
         }
     
         $newTotal = max(0, $total - $discount); // Đảm bảo không bị âm
     
         return response()->json([
-            'discount_applied' => number_format($discount, 2), // Hiển thị 2 số thập phân
-            'new_total' => number_format($newTotal, 2)
+            'discount_applied' => $discount, // Trả về số thực thay vì chuỗi
+            'new_total' => $newTotal
         ]);
     }
+    
     
     
     

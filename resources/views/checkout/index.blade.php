@@ -140,9 +140,8 @@ button:hover {
        <input id="coupon_code" placeholder="Nhập mã giảm giá" type="text"/>
        <button id="apply_coupon">Sử dụng</button>
       </div>
-      <div id="coupon_message"></div>
+      
       <input type="hidden" name="discount_amount" id="discount_amount" value="0">
-
       <div class="text-center" style="margin-top: 30px;">
        <button type="submit">ĐẶT HÀNG</button>
       </div>
@@ -170,6 +169,7 @@ button:hover {
      <p>Tổng sản phẩm: {{ $carts->sum('quantity') }}</p>
       <p>Tổng tiền: {{ number_format($total) }} VND</p>
       <p>Vận chuyển: 30,000 VND</p>
+      <div id="coupon_message"></div>
       <p class="total">Tổng thanh toán: {{ number_format($total + 30000) }} VND</p>
      </div>
     </div>
@@ -181,36 +181,44 @@ button:hover {
   
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
-    $(document).ready(function () {
-        $('#apply_coupon').click(function (e) {
-            e.preventDefault();
-            let couponCode = $('#coupon_code').val();
-            let total = {{ $total }}; // Lấy tổng tiền đơn hàng
+$('#apply_coupon').click(function (e) {
+    e.preventDefault();
+    let couponCode = $('#coupon_code').val();
+    let total = {{ $total }}; 
+    let shippingFee = 30000; // Phí vận chuyển cố định
 
-            if (couponCode === '') {
-                alert('Vui lòng nhập mã giảm giá!');
-                return;
-            }
+    if (couponCode === '') {
+        alert('Vui lòng nhập mã giảm giá!');
+        return;
+    }
 
-            $.ajax({
-                url: '/apply-coupon',
-                type: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    code: couponCode,
-                    total: total
-                },
-                success: function (response) {
-                    $('#coupon_message').html(`<p style="color: green;">Giảm giá: ${response.discount_applied} VND</p>`);
-                    $('.total').text(`Tổng thanh toán: ${response.new_total} VND`);
-                },
-                error: function (xhr) {
-                    let errorMessage = xhr.responseJSON.error;
-                    $('#coupon_message').html(`<p style="color: red;">${errorMessage}</p>`);
-                }
-            });
-        });
+    $.ajax({
+        url: '/apply-coupon',
+        type: 'POST',
+        data: {
+            _token: '{{ csrf_token() }}',
+            code: couponCode,
+            total: total
+        },
+        success: function (response) {
+            console.log('Discount Applied:', response.discount_applied);
+            console.log('New Total:', response.new_total);
+
+            let discountFormatted = parseFloat(response.discount_applied).toLocaleString('vi-VN'); 
+            let newTotalWithShipping = (parseFloat(response.new_total) + shippingFee).toLocaleString('vi-VN');
+
+            $('#coupon_message').html(`<p style="color: green;">Giảm giá: ${discountFormatted} VND</p>`);
+            $('.total').text(`Tổng thanh toán: ${newTotalWithShipping} VND`);
+            
+            $('#discount_amount').val(response.discount_applied);
+        },
+        error: function (xhr) {
+            let errorMessage = xhr.responseJSON.error;
+            $('#coupon_message').html(`<p style="color: red;">${errorMessage}</p>`);
+        }
     });
+});
+
 </script>
 
  </body>

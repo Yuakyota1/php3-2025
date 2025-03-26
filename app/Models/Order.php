@@ -18,8 +18,10 @@ class Order extends Model
         'phone',
         'note',
         'total_price',
+        'discount_applied',
         'payment_method',
         'status',
+        
     ];
 
     public function user()

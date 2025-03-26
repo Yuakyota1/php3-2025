@@ -64,66 +64,69 @@ class CheckoutController extends Controller
     }
     
     public function placeOrder(Request $request)
-{
-    $request->validate([
-        'name'    => 'required|string|max:255',
-        'email'   => 'required|email',
-        'phone'   => 'required|string|max:15',
-        'address' => 'required|string',
-        'note'    => 'nullable|string',
-        'payment' => 'required|string',
-    ]);
-
-    $user = Auth::user();
-    $carts = Cart::where('user_id', $user->id)->get();
-
-    if ($carts->isEmpty()) {
-        return redirect()->route('cart.index')->with('error', 'Giỏ hàng của bạn đang trống.');
-    }
-
-    $total = $carts->sum(fn($cart) => $cart->price * $cart->quantity);
-    $shippingFee = ($total >= 500000) ? 0 : 30000;
-    $discountAmount = $request->input('discount_amount', 0); // ✅ Nhận giá trị giảm giá từ form
-    $payableTotal = max(0, $total + $shippingFee - $discountAmount);
-
-    // Tạo đơn hàng
-    $order = Order::create([
-        'user_id'        => $user->id,
-        'orderCode'      => 'ORD' . time(),
-        'name'           => $request->name,
-        'email'          => $request->email,
-        'phone'          => $request->phone,
-        'address'        => $request->address,
-        'note'           => $request->note,
-        'total_price'    => $payableTotal,
-        'discount_applied' => $discountAmount, // ✅ Lưu giảm giá vào DB
-        'payment_method' => $request->payment,
-        'status'         => ($request->payment === 'vnpay') ? 'unpaid' : 'pending',
-    ]);
-
-    foreach ($carts as $cart) {
-        OrderItem::create([
-            'order_id'   => $order->id,
-            'product_id' => $cart->product_id,
-            'size'       => $cart->size,
-            'color'      => $cart->color,
-            'quantity'   => $cart->quantity,
-            'price'      => $cart->price,
-            'total'      => $cart->price * $cart->quantity,
+    {
+        
+        $request->validate([
+            'name'    => 'required|string|max:255',
+            'email'   => 'required|email',
+            'phone'   => 'required|string|max:15',
+            'address' => 'required|string',
+            'note'    => 'nullable|string',
+            'payment' => 'required|string',
         ]);
+    
+        $user = Auth::user();
+        $carts = Cart::where('user_id', $user->id)->get();
+    
+        if ($carts->isEmpty()) {
+            return redirect()->route('cart.index')->with('error', 'Giỏ hàng của bạn đang trống.');
+        }
+    
+        $discountAmount = (float) $request->input('discount_amount', 0); // Lấy giá trị giảm giá từ form
+        $total = $carts->sum(fn($cart) => $cart->price * $cart->quantity);
+        $shippingFee = ($total >= 500000) ? 0 : 30000;
+        $payableTotal = max(0, $total + $shippingFee - $discountAmount); // ✅ Trừ giảm giá vào tổng tiền
+        
+    
+        // ✅ Tạo đơn hàng
+        $order = Order::create([
+            'user_id'          => $user->id,
+            'orderCode'        => 'ORD' . time(),
+            'name'             => $request->name,
+            'email'            => $request->email,
+            'phone'            => $request->phone,
+            'address'          => $request->address,
+            'note'             => $request->note,
+            'total_price'      => $payableTotal,
+            'discount_applied' => $discountAmount, // ✅ Lưu giá trị giảm giá vào DB
+            'payment_method'   => $request->payment,
+            'status'           => ($request->payment === 'vnpay') ? 'unpaid' : 'pending',
+        ]);
+    
+        foreach ($carts as $cart) {
+            OrderItem::create([
+                'order_id'   => $order->id,
+                'product_id' => $cart->product_id,
+                'size'       => $cart->size,
+                'color'      => $cart->color,
+                'quantity'   => $cart->quantity,
+                'price'      => $cart->price,
+                'total'      => $cart->price * $cart->quantity,
+            ]);
+        }
+    
+        // Nếu chọn VNPay, chuyển hướng sang VNPay ngay
+        if ($request->payment === 'vnpay') {
+            return $this->createVNPayPayment($order);
+        }
+    
+        // Xóa giỏ hàng và gửi mail xác nhận đơn hàng
+        Cart::where('user_id', $user->id)->delete();
+        Mail::to($request->email)->send(new OrderConfirmationMail($order));
+    
+        return redirect()->route('checkout.index')->with('success', 'Đặt hàng thành công!');
     }
-
-    // Nếu chọn VNPay, chuyển hướng sang VNPay ngay
-    if ($request->payment === 'vnpay') {
-        return $this->createVNPayPayment($order);
-    }
-
-    // Nếu không phải VNPay, xóa giỏ hàng và gửi mail
-    Cart::where('user_id', $user->id)->delete();
-    Mail::to($request->email)->send(new OrderConfirmationMail($order));
-
-    return redirect()->route('checkout.index')->with('success', 'Đặt hàng thành công!');
-}
+    
 
 public function vnpayReturn(Request $request)
 {
