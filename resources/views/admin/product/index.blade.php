@@ -17,6 +17,7 @@
                 <th>ID</th>
                 <th>Tên sản phẩm</th>
                 <th>Danh mục con</th>
+                <th>thương hiệu</th>
                 <th>Mô tả</th>
                 <th>Hình ảnh</th>
                 <th>Hành động</th>
@@ -29,6 +30,7 @@
                 <td>{{ $product->id }}</td>
                 <td class="product-name">{{ $product->product_name }}</td>
                 <td>{{ $product->subCategory->subcategory_name ?? 'Chưa có danh mục' }}</td>
+                <td>{{ $product->brand->name ?? 'Chưa có thương hiệu' }}</td>
                 <td>{{ Str::limit($product->description, 50) }}</td>
                 <td>
                     @if($product->images)

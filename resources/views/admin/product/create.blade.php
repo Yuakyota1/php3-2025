@@ -32,12 +32,26 @@
                 <option value="">Chọn danh mục con</option>
                 @foreach ($subCategories as $subCategory)
                     <option value="{{ $subCategory->id }}" 
-                        {{ old('sub_category_id') == $subCategory->id ? 'selected' : '' }}>
-                        {{ $subCategory->subcategory_name }}
-                    </option>
+                        {{ old('sub_category_id') == $subCategory->id ? 'selected' : '' }}>{{ $subCategory->subcategory_name }}</option>
                 @endforeach
             </select>
             @error('sub_category_id')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <!-- Thương hiệu -->
+        <div class="mb-3">
+            <label for="brand_id" class="form-label">Thương hiệu</label>
+            <select class="form-control @error('brand_id') is-invalid @enderror" 
+                    id="brand_id" name="brand_id" >
+                <option value="">Chọn thương hiệu</option>
+                @foreach ($brands as $brand)
+                    <option value="{{ $brand->id }}" 
+                        {{ old('brand_id') == $brand->id ? 'selected' : '' }}>{{ $brand->name }}</option>
+                @endforeach
+            </select>
+            @error('brand_id')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>

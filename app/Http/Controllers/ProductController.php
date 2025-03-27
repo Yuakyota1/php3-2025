@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\SubCategory;
+use App\Models\Brand;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Storage;
@@ -33,8 +34,10 @@ class ProductController extends Controller
     public function create()
     {
         $subCategories = SubCategory::all(); 
-        return view('admin.product.create', compact('subCategories'));
+        $brands = Brand::all(); // Lấy danh sách thương hiệu
+        return view('admin.product.create', compact('subCategories', 'brands'));
     }
+    
     
 
     
@@ -44,6 +47,7 @@ class ProductController extends Controller
             'product_name'    => 'required|string|max:255',
             'description'     => 'nullable|string',
             'sub_category_id' => 'required|exists:sub_categories,id',
+            'brand_id'        => 'nullable|exists:brands,id',
             'images'          => 'required|array',
             'images.*'        => 'image|mimes:jpeg,png,jpg,webp,gif|max:2048' 
         ], [
@@ -51,7 +55,8 @@ class ProductController extends Controller
             'product_name.max'         => 'Tên sản phẩm không được vượt quá 255 ký tự.',
             'description.string'       => 'Mô tả sản phẩm phải là chuỗi văn bản.',
             'sub_category_id.required' => 'Vui lòng chọn danh mục con.',
-            'sub_category_id.exists'   => 'Danh mục con không hợp lệ.',                                                                                                                            
+            'sub_category_id.exists'   => 'Danh mục con không hợp lệ.',   
+            'brand_id.exists'          => 'Thương hiệu không hợp lệ.',                                                                                                                         
             'images.required'          => 'Vui lòng tải lên ít nhất một hình ảnh.',
             'images.array'             => 'Hình ảnh phải được gửi dưới dạng danh sách.',
             'images.*.image'           => 'Tập tin phải là hình ảnh.',
@@ -71,6 +76,7 @@ class ProductController extends Controller
                 'product_name'    => $request->product_name,
                 'description'     => $request->description,
                 'sub_category_id' => $request->sub_category_id,
+                'brand_id'        => $request->brand_id,
                 'images'          => json_encode($imagePaths),
             ]);
     
@@ -85,9 +91,10 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
         $subCategories = SubCategory::all(); 
-        
-        return view('admin.product.edit', compact('product', 'subCategories'));
+        $brands = Brand::all(); // Lấy danh sách thương hiệu
+        return view('admin.product.edit', compact('product', 'subCategories', 'brands'));
     }
+    
     
 
     // Xử lý cập nhật sản phẩm
@@ -99,6 +106,7 @@ class ProductController extends Controller
         $request->validate([
             'product_name' => 'required|string|max:255',
             'sub_category_id' => 'required|exists:sub_categories,id',
+            'brand_id' => 'nullable|exists:brands,id',
             'description' => 'nullable|string',
             'images.*' => 'image|mimes:jpeg,png,jpg,webp,gif,svg|max:2048'
         ]);
@@ -126,6 +134,7 @@ class ProductController extends Controller
         $product->update([
             'product_name' => $request->product_name,
             'sub_category_id' => $request->sub_category_id,
+            'brand_id' => $request->brand_id,
             'description' => $request->description,
             'images' => json_encode(array_values($images))
         ]);

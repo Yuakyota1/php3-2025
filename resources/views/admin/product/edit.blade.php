@@ -35,6 +35,21 @@
 
         </div>
 
+        <!-- Thương hiệu -->
+        <div class="mb-3">    
+            <label for="brand_id" class="form-label">Thương hiệu</label>
+            <select class="form-control" id="brand_id" name="brand_id" required>    
+                <option value="">Chọn thương hiệu</option>
+                @foreach ($brands as $brand)
+                    <option value="{{ $brand->id }}" {{ $product->brand_id == $brand->id ? 'selected' : '' }}>
+                        {{ $brand->name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>  
+
+      
+
         <!-- Mô tả -->
         <div class="mb-3">
             <label for="description" class="form-label">Mô tả</label>

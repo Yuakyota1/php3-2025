@@ -34,6 +34,9 @@
                     <a href="{{ route('admin.subcategory.index') }}" class="nav-link text-white">📂Quản lý danh mục con </a>
                 </li>
                 <li>
+                    <a href="{{ route('admin.brands.index') }}" class="nav-link text-white">📂Quản lý thương hiệu </a>
+                </li>
+                <li>
                     <a href="{{ route('admin.product.index') }}" class="nav-link text-white">📂Quản lý sản phẩm </a>
                 </li>
                 <li>

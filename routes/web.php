@@ -15,6 +15,7 @@ use App\Http\Controllers\PostCategoryController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\OrderItemController;
 use App\Http\Controllers\AdminOrderController;
 use App\Http\Controllers\CommentController;
@@ -54,6 +55,16 @@ Route::prefix('admin')->middleware(['auth', AdminMiddleware::class])->group(func
         Route::put('/{id}', [SubCategoryController::class, 'update'])->name('admin.subcategory.update');
         Route::delete('/{id}', [SubCategoryController::class, 'destroy'])->name('admin.subcategory.destroy');
     });
+    Route::prefix('brands')->group(function () {
+        Route::get('/', [BrandController::class, 'index'])->name('admin.brands.index');
+        Route::get('/create', [BrandController::class, 'create'])->name('admin.brands.create');  // Đảm bảo route này được định nghĩa
+        Route::post('/', [BrandController::class, 'store'])->name('admin.brands.store');
+        Route::get('/{id}/edit', [BrandController::class, 'edit'])->name('admin.brands.edit');
+        Route::put('/{id}', [BrandController::class, 'update'])->name('admin.brands.update');
+        Route::delete('/{id}', [BrandController::class, 'destroy'])->name('admin.brands.destroy');
+    });
+    
+    
 
     Route::prefix('product')->group(function () {
         Route::get('/', [ProductController::class, 'index'])->name('admin.product.index');
