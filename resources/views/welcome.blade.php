@@ -62,7 +62,7 @@
       <a href="">
         <div class="drawer-header--auth">
           <div class="_object">
-            <img src="./assets/img/product/giayxah2.jpg" alt="">
+            <img src="" alt="">
           </div>
           <div class="_body">Đăng nhập
             <br>Nhận nhiều ưu đãi hơn

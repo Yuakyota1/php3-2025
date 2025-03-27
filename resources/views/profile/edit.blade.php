@@ -8,7 +8,7 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <form action="{{ route('user.update') }}" method="POST" class="card p-4 shadow-sm">
+    <form action="{{ route('user.update') }}" method="POST" enctype="multipart/form-data" class="card p-4 shadow-sm">
         @csrf
         @method('PUT')
 
@@ -20,6 +20,21 @@
         <div class="mb-3">
             <label for="email" class="form-label">Email</label>
             <input type="email" name="email" id="email" class="form-control" value="{{ auth()->user()->email }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="phone" class="form-label">Số điện thoại</label>
+            <input type="text" name="phone" id="phone" class="form-control" value="{{ auth()->user()->phone }}">
+        </div>
+
+        <div class="mb-3">
+            <label for="image" class="form-label">Ảnh đại diện</label>
+            <input type="file" name="image" id="image" class="form-control">
+            @if(auth()->user()->image)
+                <div class="mt-2">
+                    <img src="{{ asset('storage/' . auth()->user()->image) }}" alt="Avatar" width="100">
+                </div>
+            @endif
         </div>
 
         <div class="mb-3">

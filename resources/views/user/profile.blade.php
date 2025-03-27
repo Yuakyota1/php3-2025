@@ -6,9 +6,14 @@
         <h2 class="text-center mb-4">Thông tin tài khoản</h2>
         <div class="row">
             <div class="col-md-4 text-center">
-                <img src="https://via.placeholder.com/150" class="rounded-circle mb-3" alt="User Avatar">
+                <img src="{{ auth()->user()->image ? asset('storage/' . auth()->user()->image) : 'https://via.placeholder.com/150' }}"
+                    class="rounded-circle mb-3"
+                    alt="User Avatar"
+                    style="width: 120px; height: 120px; object-fit: cover;">
+
                 <h4>{{ auth()->user()->name }}</h4>
                 <p class="text-muted">{{ auth()->user()->role == 'admin' ? 'Quản trị viên' : 'Người dùng' }}</p>
+                <p><strong>Số điện thoại:</strong> {{ auth()->user()->phone ?? 'Chưa cập nhật' }}</p>
             </div>
             <div class="col-md-8">
                 <table class="table table-borderless">

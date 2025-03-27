@@ -14,8 +14,8 @@
             @else
           </ul>
           <ul class="nav nav__first right">
-            <li class="nav-item nav-item__first nav-item__first-user">
-              <img src="./assets/img/product/noavatar.png" alt="" class="nav-item__first-img">
+            <li class="nav-item nav-item__first nav-item__first-user"><img src="{{ Auth::user()->image ? asset('storage/' . Auth::user()->image) : 'https://via.placeholder.com/150' }}" alt="User Avatar" class="nav-item__first-img">
+
               <span class="nav-item__first-name">{{ Auth::user()->name }}</span>
               <ul class="nav-item__first-menu">
                 @auth
