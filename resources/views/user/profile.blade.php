@@ -51,5 +51,31 @@
         </div>
     </div>
 </div>
+@if(auth()->check() && auth()->user()->status == 0)
+<div class="modal fade" id="blockedModal" tabindex="-1" aria-labelledby="blockedModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger" id="blockedModalLabel">Tài khoản bị khóa</h5>
+            </div>
+            <div class="modal-body">
+                Tài khoản của bạn đã bị khóa. Vui lòng liên hệ admin để được hỗ trợ!
+            </div>
+            <div class="modal-footer">
+                <a href="{{ route('logout') }}" class="btn btn-danger">Đăng xuất</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var blockedModal = new bootstrap.Modal(document.getElementById('blockedModal'));
+        blockedModal.show();
+    });
+</script>
+@endif
+
+
+
 
 @include('layout.footer')

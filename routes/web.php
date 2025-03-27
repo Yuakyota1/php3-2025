@@ -23,6 +23,13 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Middleware\CheckUserStatus;
+
+Route::middleware(['auth', 'check.status'])->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+});
 
 Route::get('/', function () {
     return view('welcome');
@@ -33,8 +40,6 @@ use App\Http\Middleware\AdminMiddleware;
 
 Route::prefix('admin')->middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-
-
 
     // Categories
     Route::prefix('categories')->group(function () {
@@ -208,6 +213,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/revenue-data', [AdminOrderController::class, 'getRevenueData'])->name('revenue.data');
 });
 Route::post('/apply-coupon', [CouponController::class, 'apply']);
+
+Route::middleware(['auth', 'check.status'])->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+});
 
 
 Route::middleware(['auth'])->group(function () {
