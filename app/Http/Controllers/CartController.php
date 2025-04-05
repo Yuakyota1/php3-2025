@@ -94,29 +94,34 @@ class CartController extends Controller {
     }
 
     public function update(Request $request, $id)
-    {
-        if (!Auth::check()) {
-            return redirect()->back()->with('error', 'Bạn cần đăng nhập để cập nhật giỏ hàng.');
-        }
-    
-        $cart = Cart::find($id);
-        if ($cart) {
-            $availableStock = ProductSizeColor::where('idProduct', $cart->product_id)
-                ->where('color', $cart->color)
-                ->where('idSize', \App\Models\Size::where('size_name', $cart->size)->value('id'))
-                ->value('quantity');
-    
-            if ($request->quantity > $availableStock) {
-                return redirect()->back()->with('error_'.$id, 'Số lượng yêu cầu đã vượt quá tồn kho!');
-            }
-    
-            $cart->quantity = $request->quantity;
-            $cart->total_price = $cart->quantity * $cart->price;
-            $cart->save();
-        }
-    
-        return redirect()->back()->with('success', 'Cập nhật số lượng thành công!');
+{
+    if (!Auth::check()) {
+        return response()->json(['status' => 'error', 'message' => 'Bạn cần đăng nhập để cập nhật giỏ hàng.']);
     }
+
+    $cart = Cart::find($id);
+    if (!$cart) {
+        return response()->json(['status' => 'error', 'message' => 'Không tìm thấy sản phẩm trong giỏ hàng.']);
+    }
+
+    $availableStock = ProductSizeColor::where('idProduct', $cart->product_id)
+        ->where('color', $cart->color)
+        ->where('idSize', \App\Models\Size::where('size_name', $cart->size)->value('id'))
+        ->value('quantity');
+
+    if ($request->quantity > $availableStock) {
+        return response()->json(['status' => 'error', 'message' => 'Số lượng yêu cầu đã vượt quá tồn kho!']);
+    }
+
+    $cart->quantity = $request->quantity;
+    $cart->total_price = $cart->quantity * $cart->price;
+    $cart->save();
+
+    return response()->json(['status' => 'success', 'message' => 'Cập nhật số lượng thành công!']);
+}
+
+    
+    
     
 
     // 🆕 Xóa toàn bộ giỏ hàng

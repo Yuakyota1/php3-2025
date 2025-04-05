@@ -30,7 +30,7 @@
                   <a href="/profile">Tài khoản của tôi</a>
                 </li>
                 <li class="nav-item__first-item">
-                  <a href="">Địa chỉ của tôi</a>
+                  <a href="/addresses">Địa chỉ của tôi</a>
                 </li>
                 <li class="nav-item__first-item">
                   <a href="/orders">Đơn mua</a>
@@ -61,11 +61,11 @@
             </a>
           </div>
           <div class="mobile_cart visible-sm visible-xs">
-            <a href="./cart" class="header__second__cart--icon">
+            <a href="/cart" class="header__second__cart--icon">
               <i class="fas fa-shopping-cart"></i>
               <span id="header__second__cart--notice" class="header__second__cart--notice"></span>
             </a>
-            <a href="./favorites" class="header__second__like--icon">
+            <a href="/favorites" class="header__second__like--icon">
               <i class="far fa-heart"></i>
               <span id="header__second__like--notice" class="header__second__like--notice"></span>
             </a>
@@ -79,13 +79,13 @@
         </div>
         <div class="col-3 m-auto hidden-sm hidden-xs">
           <div class="item-car clearfix">
-            <a href="./cart" class="header__second__cart--icon">
+            <a href="/cart" class="header__second__cart--icon">
               <i class="fas fa-shopping-cart"></i>
               <span id="header__second__cart--notice" class="header__second__cart--notice">3</span>
             </a>
           </div>
           <div class="item-like clearfix">
-            <a href="./favorites" class="header__second__like--icon">
+            <a href="/favorites" class="header__second__like--icon">
               <i class="far fa-heart"></i>
               <span id="header__second__like--notice" class="header__second__like--notice">3</span>
             </a>
@@ -97,55 +97,40 @@
   <nav class="header_nav hidden-sm hidden-xs">
     <div class="container">
       <ul class="header_nav-list nav">
-        <li class="header_nav-list-item "><a href="./index.html" class="active">Trang chủ</a></li>
-        <li class="header_nav-list-item"><a href="./intro.html">Giới thiệu</a></li>
+        <li class="header_nav-list-item"><a href="/" class="active">Trang chủ</a></li>
+        <li class="header_nav-list-item"><a href="#">Giới thiệu</a></li>
         <li class="header_nav-list-item has-mega">
-          <a href="./product">Sản phẩm<i class="fas fa-angle-right" style="margin-left: 5px;"></i></a>
+          <a href="./product">Sản phẩm <i class="fas fa-angle-right" style="margin-left: 5px;"></i></a>
           <div class="mega-content" style="overflow-x: hidden;">
             <div class="row">
               <ul class="col-8 no-padding level0">
                 <li class="level1">
-                  <a class="hmega" href="./product">Tất cả sản phẩm</a>
-                  <!-- <ul class="level1">
-                        <li class="level2"><a href="">Bóng đá</a></li>
-                        <li class="level2"><a href="">Bóng đá</a></li>
-                        <li class="level2"><a href="">Bóng đá</a></li>
-                        <li class="level2"><a href="">Bóng đá</a></li>
-                      </ul> -->
+                  <a class="hmega" href="/product">Tất cả sản phẩm</a>
                 </li>
+                @foreach ($categories as $category)
                 <li class="level1">
-                  <a class="hmega">Giày, dép</a>
-                  <ul class="level1">
-                    <li class="level2"><a href="./Product.html">Bóng đá</a></li>
-                    <li class="level2"><a href="./Product.html">Chạy</a></li>
-                    <li class="level2"><a href="./Product.html">Cầu lông</a></li>
-                    <li class="level2"><a href="./Product.html">Bóng rổ</a></li>
-                    <li class="level2"><a href="./Product.html">Quần vợt</a></li>
+                  <!-- Thêm link lọc theo danh mục -->
+                  <a class="hmega" href="{{ route('shop', ['category' => $category->id]) }}">
+                    {{ $category->category_name }}
+                  </a>
+
+                  @if ($category->subcategories->count() > 0)
+                  <ul class="level2">
+                    @foreach ($category->subcategories as $subcategory)
+                    <li>
+                      <!-- Thêm link lọc theo danh mục con -->
+                      <a href="{{ route('shop', ['category' => $category->id, 'subcategory' => $subcategory->id]) }}">
+                        {{ $subcategory->subcategory_name }}
+                      </a>
+                    </li>
+                    @endforeach
                   </ul>
+                  @endif
                 </li>
-                <li class="level1">
-                  <a class="hmega">Quần, áo</a>
-                  <ul class="level1">
-                    <li class="level2"><a href="./Product.html">Bóng đá</a></li>
-                    <li class="level2"><a href="./Product.html">Chạy</a></li>
-                    <li class="level2"><a href="./Product.html">Cầu lông</a></li>
-                    <li class="level2"><a href="./Product.html">Bóng rổ</a></li>
-                    <li class="level2"><a href="./Product.html">Quần vợt</a></li>
-                  </ul>
-                </li>
-                <li class="level1">
-                  <a class="hmega">Phụ kiện</a>
-                  <ul class="level1">
-                    <li class="level2"><a href="./Product.html">Bóng đá</a></li>
-                    <li class="level2"><a href="./Product.html">Chạy</a></li>
-                    <li class="level2"><a href="./Product.html">Cầu lông</a></li>
-                    <li class="level2"><a href="./Product.html">Bóng rổ</a></li>
-                    <li class="level2"><a href="./Product.html">Quần vợt</a></li>
-                    <li class="level2"><a href="./Product.html">Bơi lội</a></li>
-                    <li class="level2"><a href="./Product.html">Golf</a></li>
-                  </ul>
-                </li>
+                @endforeach
+
               </ul>
+
               <div class="col-4">
                 <a href="">
                   <picture>
@@ -160,6 +145,7 @@
         <li class="header_nav-list-item"><a href="./contact.html">Liên hệ</a></li>
       </ul>
     </div>
+
   </nav>
-  
+
 </header>

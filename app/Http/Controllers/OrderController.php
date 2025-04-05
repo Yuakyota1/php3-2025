@@ -113,12 +113,13 @@ public function destroy($id)
 {
     $order = Order::findOrFail($id);
 
-    if ($order->status == 'canceled') {
+    if (in_array($order->status, ['canceled', 'failed'])) {
         $order->delete();
         return redirect()->route('orders.index')->with('success', 'Đơn hàng đã được xóa.');
     }
 
-    return redirect()->route('orders.index')->with('error', 'Chỉ có thể xóa đơn hàng đã hủy.');
+    return redirect()->route('orders.index')->with('error', 'Chỉ có thể xóa đơn hàng đã hủy hoặc thất bại.');
 }
+
 
 }

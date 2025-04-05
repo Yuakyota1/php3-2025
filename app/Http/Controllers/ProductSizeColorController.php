@@ -32,11 +32,28 @@ class ProductSizeColorController extends Controller
             'quantity' => 'required|integer',
             'price' => 'required|numeric',
         ]);
-
+    
+        // Kiểm tra nếu màu sắc đã tồn tại cho sản phẩm và kích thước này
+        $existing = ProductSizeColor::where('idProduct', $request->idProduct)
+            ->where('color', $request->color)
+            ->where('idSize', $request->idSize)
+            ->first();
+    
+        if ($existing) {
+            // Nếu màu sắc đã tồn tại, trả về thông báo lỗi
+            return redirect()->route('admin.product_size_color.create')
+                ->with('error', 'Màu sắc đã tồn tại cho sản phẩm và kích thước này.');
+        }
+    
+        // Tạo mới bản ghi ProductSizeColor
         ProductSizeColor::create($request->only(['idProduct', 'color', 'idSize', 'quantity', 'price']));
-
-        return redirect()->route('admin.product_size_color.index')->with('success', 'Dữ liệu đã được thêm.');
+    
+        // Nếu thêm thành công, trả về thông báo thành công
+        return redirect()->route('admin.product_size_color.index')
+            ->with('success', 'Dữ liệu đã được thêm.');
     }
+    
+    
     public function edit($id)
     {
         $item = ProductSizeColor::findOrFail($id);

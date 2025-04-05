@@ -24,6 +24,7 @@ use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Middleware\CheckUserStatus;
+use App\Http\Controllers\AddressController;
 
 Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
@@ -216,8 +217,18 @@ Route::post('/apply-coupon', [CouponController::class, 'apply']);
 
 Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-    Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+});
+Route::middleware(['auth'])->group(function () {
+Route::get('/addresses', [AddressController::class, 'index'])->name('addresses.index');
+Route::get('/addresses/create', [AddressController::class, 'create'])->name('addresses.create');
+Route::post('/addresses', [AddressController::class, 'store'])->name('addresses.store');
+Route::get('/addresses/{address}/edit', [AddressController::class, 'edit'])->name('addresses.edit');
+Route::put('/addresses/{address}', [AddressController::class, 'update'])->name('addresses.update');
+Route::delete('/addresses/{address}', [AddressController::class, 'destroy'])->name('addresses.destroy');
+
+
+
 });
 
 
@@ -226,4 +237,29 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
     Route::get('/profile/edit', [UserController::class, 'editProfile'])->name('user.edit');
     Route::put('/profile/update', [UserController::class, 'updateProfile'])->name('user.update');
+});
+Route::get('/shop', [ProductController::class, 'shop'])->name('shop');
+Route::get('/get-subcategories/{category_id}', [SubCategoryController::class, 'getSubCategories']);
+
+use Laravel\Socialite\Facades\Socialite;
+use App\Models\User;
+
+Route::get('auth/google', function () {
+    return Socialite::driver('google')->redirect();
+})->name('google.login');
+
+Route::get('auth/google/callback', function () {
+    $googleUser = Socialite::driver('google')->user();
+
+    $user = User::updateOrCreate([
+        'email' => $googleUser->getEmail(),
+    ], [
+        'name' => $googleUser->getName(),
+        'google_id' => $googleUser->getId(),
+        'password' => bcrypt(str()->random(16)),
+    ]);
+
+    Auth::login($user);
+
+    return redirect('/');
 });

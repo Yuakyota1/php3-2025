@@ -1,10 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-@include('layout.head')  {{-- Gọi file head.blade.php trong thư mục layout --}}
-<header>
-   @include('layout.header')  {{-- Gọi file header.blade.php trong thư mục layout --}}
-  </header>
+
   <br>
   
 <div class="container">

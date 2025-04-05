@@ -49,7 +49,7 @@
                             <small class="text-danger mt-1">{{ session('error_'.$cart->id) }}</small>
                             @endif
 
-                            <button type="submit" class="btn btn-outline-primary btn-sm mt-2">🔄</button>
+                            <button type="submit" class="btn btn-outline-primary btn-sm mt-2">cập nhật</button>
                         </form>
                         @else
                         <span>Vui lòng <a href="{{ route('login') }}">đăng nhập</a> để cập nhật số lượng</span>
@@ -78,5 +78,50 @@
     </div>
     @endif
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll("form[action*='cart/update']").forEach(form => {
+        form.addEventListener("submit", function (event) {
+            event.preventDefault(); // Ngăn form reload trang
+
+            let formData = new FormData(this);
+            let actionUrl = this.getAttribute("action");
+
+            fetch(actionUrl, {
+                method: "POST", // Nếu route dùng POST thì giữ nguyên
+                body: formData,
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector("meta[name='csrf-token']").getAttribute("content"),
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                Swal.fire({
+                    icon: data.status === "success" ? "success" : "error",
+                    title: data.status === "success" ? "Thành công!" : "Lỗi!",
+                    text: data.message,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+
+                if (data.status === "success") {
+                    setTimeout(() => location.reload(), 2000);
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: "error",
+                    title: "Lỗi!",
+                    text: "Đã xảy ra lỗi không mong muốn.",
+                    showConfirmButton: true
+                });
+            });
+        });
+    });
+});
+
+</script>
 
 @include('layout.footer')

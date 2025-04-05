@@ -10,9 +10,10 @@ class CategoryController extends Controller
     // Hiển thị danh sách danh mục
     public function index()
     {
-        $categories = Category::all();
+        $categories = Category::with('subcategories')->get(); 
         return view('admin.category.index', compact('categories'));
     }
+    
 
     // Hiển thị form tạo danh mục
     public function create()

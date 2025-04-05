@@ -10,10 +10,12 @@ use Illuminate\Support\Facades\Storage;
 class UserController extends Controller
 {
     public function index()
-    {
-        $users = User::all();
-        return view('admin.users.index', compact('users'));
-    }
+{
+    $users = User::all();
+    $adminCount = User::where('role', 'admin')->count(); // Đếm số admin
+
+    return view('admin.users.index', compact('users', 'adminCount'));
+}
 
     public function create()
     {
@@ -89,22 +91,33 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')->with('success', 'Người dùng đã được cập nhật.');
     }
     
-
     public function destroy($id)
     {
         $user = User::findOrFail($id);
+    
+        // Kiểm tra nếu người dùng là admin
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.users.index')->with('error', 'Không thể xóa tài khoản quản trị viên.');
+        }
+    
+        // Xóa hình ảnh nếu có
         if ($user->image) {
             Storage::disk('public')->delete($user->image);
         }
+    
+        // Xóa người dùng
         $user->delete();
-
+    
         return redirect()->route('admin.users.index')->with('success', 'Người dùng đã được xóa.');
     }
+    
 
     public function profile()
-    {
-        return view('user.profile');
-    }
+{
+    $user = auth()->user(); // Lấy thông tin người dùng hiện tại
+    return view('user.profile', compact('user')); // Truyền dữ liệu người dùng vào view
+}
+
 
     public function editProfile()
     {

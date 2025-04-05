@@ -6,11 +6,8 @@
   <link rel="stylesheet" href="styles.css">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
  </head>
+ <br>
  <style>
-
-
-
-
 
 .flex-container {
     display: flex;
@@ -220,7 +217,61 @@ $('#apply_coupon').click(function (e) {
 });
 
 </script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+$('#apply_coupon').click(function (e) {
+    e.preventDefault();
+    let couponCode = $('#coupon_code').val();
+    let total = {{ $total }};
+    let shippingFee = 30000;
 
+    if (couponCode === '') {
+        Swal.fire({
+            title: 'Lỗi!',
+            text: 'Vui lòng nhập mã giảm giá!',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+
+    $.ajax({
+        url: '/apply-coupon',
+        type: 'POST',
+        data: {
+            _token: '{{ csrf_token() }}',
+            code: couponCode,
+            total: total
+        },
+        success: function (response) {
+            let discountFormatted = parseFloat(response.discount_applied).toLocaleString('vi-VN');
+            let newTotalWithShipping = (parseFloat(response.new_total) + shippingFee).toLocaleString('vi-VN');
+
+            $('#coupon_message').html(`<p style="color: green;">Giảm giá: ${discountFormatted} VND</p>`);
+            $('.total').text(`Tổng thanh toán: ${newTotalWithShipping} VND`);
+            $('#discount_amount').val(response.discount_applied);
+
+            Swal.fire({
+                title: 'Thành công!',
+                text: `Bạn đã áp dụng mã giảm giá thành công! Giảm giá: ${discountFormatted} VND.`,
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        },
+        error: function (xhr) {
+            let errorMessage = xhr.responseJSON.error;
+            $('#coupon_message').html(`<p style="color: red;">${errorMessage}</p>`);
+
+            Swal.fire({
+                title: 'Lỗi!',
+                text: errorMessage,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+    });
+});
+</script>
  </body>
 </html>
 

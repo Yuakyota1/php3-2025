@@ -308,10 +308,10 @@
           <div class="col-6 login_link">
             <ul class="header_link right m-auto">
               <li>
-                <a href="./Login.html"><i class="fas fa-sign-in-alt mr-3"></i>Đăng nhập</a>
+                <a href="/Login"><i class="fas fa-sign-in-alt mr-3"></i>Đăng nhập</a>
               </li>
               <li>
-                <a href="./registration.html"><i class="fas fa-user-plus mr-3" style="margin-left: 10px;"></i>Đăng kí</a>
+                <a href="/register"><i class="fas fa-user-plus mr-3" style="margin-left: 10px;"></i>Đăng kí</a>
               </li>
             </ul>
             <!-- <ul class="nav nav__first right">
@@ -358,7 +358,7 @@
             </div>
           </div>
           <div class="col-lg-6 m-auto pdt15">
-            <form class="example" action="./Product.html">
+            <form class="example" action="/Product">
               <input type="text" class="input-search" placeholder="Tìm kiếm.." name="search">
               <button type="submit" class="search-btn"><i class="fa fa-search"></i></button>
             </form>
@@ -383,7 +383,7 @@
     <nav class="header_nav hidden-sm hidden-xs">
       <div class="container">
         <ul class="header_nav-list nav">
-          <li class="header_nav-list-item "><a href="./index.html" class="active">Trang chủ</a></li>
+          <li class="header_nav-list-item "><a href="/" class="active">Trang chủ</a></li>
           <li class="header_nav-list-item"><a href="./intro.html">Giới thiệu</a></li>
           <li class="header_nav-list-item has-mega">
             <a href="./Product.html">Sản phẩm<i class="fas fa-angle-right" style="margin-left: 5px;"></i></a>
@@ -391,7 +391,7 @@
               <div class="row">
                 <ul class="col-8 no-padding level0">
                   <li class="level1">
-                    <a class="hmega" href="./Product.html">Tất cả sản phẩm</a>
+                    <a class="hmega" href="./Product">Tất cả sản phẩm</a>
                     <!-- <ul class="level1">
                         <li class="level2"><a href="">Bóng đá</a></li>
                         <li class="level2"><a href="">Bóng đá</a></li>
@@ -452,71 +452,72 @@
   <!-- login form -->
   <div class="container">
     <div class="login__form">
-        <div class="row">
-            <div class="col-sm-12 col-lg-6">
-                <form action="{{ route('login.post') }}" method="POST" class="form" id="form-2">
-                    @csrf
-                    <h3 class="heading">ĐĂNG NHẬP</h3>
-                    <a href="{{ route('password.request') }}" class="form__forgot-password">Bạn quên mật khẩu?</a>
-                    
-                    <div class="form-group">
-                        <label for="email" class="form-label">Email</label>
-                        <input id="email" name="email" type="text" placeholder="VD: email@domain.com" class="form-control" value="{{ old('email') }}">
-                        @error('email')
-                            <span class="form-message text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
+      <div class="row">
+        <div class="col-sm-12 col-lg-6">
+          <form action="{{ route('login.post') }}" method="POST" class="form" id="form-2">
+            @csrf
+            <h3 class="heading">ĐĂNG NHẬP</h3>
+            <a href="{{ route('password.request') }}" class="form__forgot-password">Bạn quên mật khẩu?</a>
 
-                    <div class="form-group matkhau">
-                        <label for="password" class="form-label">Mật khẩu</label>
-                        <input id="password" name="password" type="password" placeholder="Nhập mật khẩu" class="form-control">
-                        <span class="show-hide">
-                            <i class="fas fa-eye" onclick="myFunction()"></i> Mật khẩu
-                        </span>
-                        @error('password')
-                            <span class="form-message text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    <button class="form-submit btn-blocker" type="submit" style="border-radius: unset;">
-                        ĐĂNG NHẬP <i class="fas fa-arrow-right" style="font-size: 16px;margin-left: 10px;"></i>
-                    </button>
-
-                    <h4>HOẶC</h4>
-                    <div class="form-social">
-                        <a href="#" class="form-submit-social btn-blocker">
-                            <span>Facebook</span>
-                            <img src="./assets/icon/facebook.svg" alt="" class="form-submit-social--img">
-                        </a>
-                        <a href="#" class="form-submit-social btn-blocker">
-                            <span>GOOGLE</span>
-                            <img src="./assets/icon/google.svg" alt="" class="form-submit-social--img">
-                        </a>
-                    </div>
-                </form>
+            <div class="form-group">
+              <label for="email" class="form-label">Email</label>
+              <input id="email" name="email" type="text" placeholder="VD: email@domain.com" class="form-control" value="{{ old('email') }}">
+              @error('email')
+              <span class="form-message text-danger">{{ $message }}</span>
+              @enderror
             </div>
 
-            <div class="col-sm-12 col-lg-6">
-                <h3 class="heading">TẠO MỘT TÀI KHOẢN</h3>
-                <p class="text-login">Thật dễ dàng tạo một tài khoản. Hãy nhập địa chỉ email của bạn và điền vào mẫu trên
-                    trang tiếp theo và tận hưởng những lợi ích của việc sở hữu một tài khoản :</p>
-                <ul>
-                    <li class="text-login-item"><i class="fas fa-check"></i> Tổng quan đơn giản về thông tin cá nhân của bạn</li>
-                    <li class="text-login-item"><i class="fas fa-check"></i> Thanh toán nhanh hơn</li>
-                    <li class="text-login-item"><i class="fas fa-check"></i> Ưu đãi và khuyến mãi độc quyền</li>
-                    <li class="text-login-item"><i class="fas fa-check"></i> Các sản phẩm mới nhất</li>
-                    <li class="text-login-item"><i class="fas fa-check"></i> Các bộ sưu tập giới hạn và bộ sưu tập theo mùa mới</li>
-                    <li class="text-login-item"><i class="fas fa-check"></i> Các sự kiện sắp tới</li>
-                </ul>
-                <a href="{{ route('register') }}">
-                    <button class="form-submit btn-blocker custom-btn" style="border-radius: unset;margin:unset">
-                        ĐĂNG KÍ <i class="fas fa-arrow-right" style="font-size: 16px;margin-left: 10px;"></i>
-                    </button>
-                </a>
+            <div class="form-group matkhau">
+              <label for="password" class="form-label">Mật khẩu</label>
+              <input id="password" name="password" type="password" placeholder="Nhập mật khẩu" class="form-control">
+              <span class="show-hide">
+                <i class="fas fa-eye" onclick="myFunction()"></i> Mật khẩu
+              </span>
+              @error('password')
+              <span class="form-message text-danger">{{ $message }}</span>
+              @enderror
             </div>
+
+            <button class="form-submit btn-blocker" type="submit" style="border-radius: unset;">
+              ĐĂNG NHẬP <i class="fas fa-arrow-right" style="font-size: 16px;margin-left: 10px;"></i>
+            </button>
+
+            <h4>HOẶC</h4>
+            <div class="form-social">
+              <a href="#" class="form-submit-social btn-blocker">
+                <span>Facebook</span>
+                <img src="./assets/icon/facebook.svg" alt="" class="form-submit-social--img">
+              </a>
+              <a href="{{ route('google.login') }}" class="form-submit-social btn-blocker">
+                <span>GOOGLE</span>
+                <img src="./assets/icon/google.svg" alt="" class="form-submit-social--img">
+              </a>
+
+            </div>
+          </form>
         </div>
+
+        <div class="col-sm-12 col-lg-6">
+          <h3 class="heading">TẠO MỘT TÀI KHOẢN</h3>
+          <p class="text-login">Thật dễ dàng tạo một tài khoản. Hãy nhập địa chỉ email của bạn và điền vào mẫu trên
+            trang tiếp theo và tận hưởng những lợi ích của việc sở hữu một tài khoản :</p>
+          <ul>
+            <li class="text-login-item"><i class="fas fa-check"></i> Tổng quan đơn giản về thông tin cá nhân của bạn</li>
+            <li class="text-login-item"><i class="fas fa-check"></i> Thanh toán nhanh hơn</li>
+            <li class="text-login-item"><i class="fas fa-check"></i> Ưu đãi và khuyến mãi độc quyền</li>
+            <li class="text-login-item"><i class="fas fa-check"></i> Các sản phẩm mới nhất</li>
+            <li class="text-login-item"><i class="fas fa-check"></i> Các bộ sưu tập giới hạn và bộ sưu tập theo mùa mới</li>
+            <li class="text-login-item"><i class="fas fa-check"></i> Các sự kiện sắp tới</li>
+          </ul>
+          <a href="{{ route('register') }}">
+            <button class="form-submit btn-blocker custom-btn" style="border-radius: unset;margin:unset">
+              ĐĂNG KÍ <i class="fas fa-arrow-right" style="font-size: 16px;margin-left: 10px;"></i>
+            </button>
+          </a>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
 
   <!-- end login form -->
   <!-- footer -->
@@ -638,7 +639,7 @@
       //   return document.querySelector('#form-1 #password').value;
       // }, 'Mật khẩu nhập lại không chính xác')
     ],
-    onSubmit: function (data) {
+    onSubmit: function(data) {
       // call api
       console.log(data);
     }
@@ -647,6 +648,7 @@
 <script>
   const pass_field = document.querySelector('#password');
   const show_btn = document.querySelector('.fa-eye')
+
   function myFunction() {
     if (pass_field.type === "password") {
       pass_field.type = "text";
@@ -656,9 +658,9 @@
       show_btn.classList.remove("hide");
     }
   }
-      // show_btn.addEventListener("click",function(){
+  // show_btn.addEventListener("click",function(){
 
-      // });
+  // });
 </script>
 
 </html>

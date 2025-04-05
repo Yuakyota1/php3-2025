@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+
 use App\Models\SubCategory;
+use  App\Models\Category;
 use App\Models\Brand;
 use Illuminate\Http\Request;
 
@@ -14,16 +16,32 @@ class ProductController extends Controller
     // Hiển thị danh sách sản phẩm
     public function index()
     {
-        $products = Product::paginate(2); // Hiển thị 10 sản phẩm mỗi trang
+        $products = Product::paginate(10); 
         return view('admin.product.index', compact('products'));
     }
     
 
-    public function shop()
+    public function shop(Request $request)
     {
-        $products = Product::paginate(12); // Hiển thị 12 sản phẩm mỗi trang
-        return view('product.index', compact('products'));
+        $query = Product::query();
+    
+        // Lọc theo danh mục cha
+        if ($request->has('category') && !empty($request->category)) {
+            $query->whereIn('category_id', (array) $request->category);
+        }
+    
+        // Lọc theo danh mục con
+        if ($request->has('subcategory') && !empty($request->subcategory)) {
+            $query->whereIn('sub_category_id', (array) $request->subcategory);
+        }
+    
+        $products = $query->paginate(6);
+        $categories = Category::with('subcategories')->get();
+    
+        return view('product.index', compact('products', 'categories'));
     }
+    
+    
     public function show($id) {
         $product = Product::with(['sizeColors', 'subCategory', 'comments.user'])->findOrFail($id);
         return view('product.detail', compact('product'));
@@ -40,51 +58,44 @@ class ProductController extends Controller
     
     
 
-    
     public function store(Request $request)
-    {
-        $request->validate([
-            'product_name'    => 'required|string|max:255',
-            'description'     => 'nullable|string',
-            'sub_category_id' => 'required|exists:sub_categories,id',
-            'brand_id'        => 'nullable|exists:brands,id',
-            'images'          => 'required|array',
-            'images.*'        => 'image|mimes:jpeg,png,jpg,webp,gif|max:2048' 
-        ], [
-            'product_name.required'    => 'Vui lòng nhập tên sản phẩm.',
-            'product_name.max'         => 'Tên sản phẩm không được vượt quá 255 ký tự.',
-            'description.string'       => 'Mô tả sản phẩm phải là chuỗi văn bản.',
-            'sub_category_id.required' => 'Vui lòng chọn danh mục con.',
-            'sub_category_id.exists'   => 'Danh mục con không hợp lệ.',   
-            'brand_id.exists'          => 'Thương hiệu không hợp lệ.',                                                                                                                         
-            'images.required'          => 'Vui lòng tải lên ít nhất một hình ảnh.',
-            'images.array'             => 'Hình ảnh phải được gửi dưới dạng danh sách.',
-            'images.*.image'           => 'Tập tin phải là hình ảnh.',
-            'images.*.mimes'           => 'Ảnh phải có định dạng: jpeg, png, jpg, webp, gif.',
-            'images.*.max'             => 'Dung lượng ảnh không được vượt quá 2MB.',
-        ]);
-    
-        try {
-            $imagePaths = [];
-            if ($request->hasFile('images')) {
-                foreach ($request->file('images') as $image) {
-                    $imagePaths[] = $image->store('products', 'public'); 
-                }
+{
+    $request->validate([
+        'product_name'    => 'required|string|max:255',
+        'description'     => 'nullable|string',
+        'category_id'     => 'required|exists:categories,id', // Thêm validation cho category_id
+        'sub_category_id' => 'required|exists:sub_categories,id',
+        'brand_id'        => 'nullable|exists:brands,id',
+        'images'          => 'required|array',
+        'images.*'        => 'image|mimes:jpeg,png,jpg,webp,gif|max:2048' 
+    ], [
+        'category_id.required' => 'Vui lòng chọn danh mục cha.',
+        'category_id.exists'   => 'Danh mục cha không hợp lệ.',
+    ]);
+
+    try {
+        $imagePaths = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $imagePaths[] = $image->store('products', 'public'); 
             }
-    
-            Product::create([
-                'product_name'    => $request->product_name,
-                'description'     => $request->description,
-                'sub_category_id' => $request->sub_category_id,
-                'brand_id'        => $request->brand_id,
-                'images'          => json_encode($imagePaths),
-            ]);
-    
-            return redirect()->route('admin.product.create')->with('success', 'Sản phẩm đã được thêm thành công!');
-        } catch (\Exception $e) {
-            return redirect()->route('admin.product.create')->with('error', 'Thêm sản phẩm thất bại! Vui lòng thử lại.');
         }
+
+        Product::create([
+            'product_name'    => $request->product_name,
+            'description'     => $request->description,
+            'category_id'     => $request->category_id, // Lưu category_id
+            'sub_category_id' => $request->sub_category_id,
+            'brand_id'        => $request->brand_id,
+            'images'          => json_encode($imagePaths),
+        ]);
+
+        return redirect()->route('admin.product.create')->with('success', 'Sản phẩm đã được thêm thành công!');
+    } catch (\Exception $e) {
+        return redirect()->route('admin.product.create')->with('error', 'Thêm sản phẩm thất bại! Vui lòng thử lại.');
     }
+}
+
     
     // Hiển thị form sửa sản phẩm
     public function edit($id)
@@ -99,49 +110,48 @@ class ProductController extends Controller
 
     // Xử lý cập nhật sản phẩm
     public function update(Request $request, $id)
-    {
-        $product = Product::findOrFail($id);
+{
+    $product = Product::findOrFail($id);
+
+    $request->validate([
+        'product_name'    => 'required|string|max:255',
+        'category_id'     => 'required|exists:categories,id', // Thêm validation cho category_id
+        'sub_category_id' => 'required|exists:sub_categories,id',
+        'brand_id'        => 'nullable|exists:brands,id',
+        'description'     => 'nullable|string',
+        'images.*'        => 'image|mimes:jpeg,png,jpg,webp,gif|max:2048'
+    ]);
+
+    $images = json_decode($product->images, true) ?? [];
     
-        // Validate dữ liệu
-        $request->validate([
-            'product_name' => 'required|string|max:255',
-            'sub_category_id' => 'required|exists:sub_categories,id',
-            'brand_id' => 'nullable|exists:brands,id',
-            'description' => 'nullable|string',
-            'images.*' => 'image|mimes:jpeg,png,jpg,webp,gif,svg|max:2048'
-        ]);
-    
-        // Xử lý xóa ảnh cũ nếu có
-        $images = json_decode($product->images, true) ?? [];
-        if ($request->has('delete_images')) {
-            foreach ($request->delete_images as $deleteImage) {
-                if (($key = array_search($deleteImage, $images)) !== false) {
-                    unset($images[$key]);
-                    Storage::delete('public/' . $deleteImage);
-                }
+    if ($request->has('delete_images')) {
+        foreach ($request->delete_images as $deleteImage) {
+            if (($key = array_search($deleteImage, $images)) !== false) {
+                unset($images[$key]);
+                Storage::delete('public/' . $deleteImage);
             }
         }
-    
-        // Xử lý upload ảnh mới
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $path = $image->store('uploads/products', 'public');
-                $images[] = $path;
-            }
-        }
-    
-        // Cập nhật sản phẩm
-        $product->update([
-            'product_name' => $request->product_name,
-            'sub_category_id' => $request->sub_category_id,
-            'brand_id' => $request->brand_id,
-            'description' => $request->description,
-            'images' => json_encode(array_values($images))
-        ]);
-    
-        return redirect()->route('admin.product.index')->with('success', 'Sản phẩm đã được cập nhật.');
     }
-    
+
+    if ($request->hasFile('images')) {
+        foreach ($request->file('images') as $image) {
+            $path = $image->store('uploads/products', 'public');
+            $images[] = $path;
+        }
+    }
+
+    $product->update([
+        'product_name'    => $request->product_name,
+        'category_id'     => $request->category_id, // Cập nhật category_id
+        'sub_category_id' => $request->sub_category_id,
+        'brand_id'        => $request->brand_id,
+        'description'     => $request->description,
+        'images'          => json_encode(array_values($images))
+    ]);
+
+    return redirect()->route('admin.product.index')->with('success', 'Sản phẩm đã được cập nhật.');
+}
+
 
     // Xóa sản phẩm
     public function destroy($id)

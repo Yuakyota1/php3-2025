@@ -24,13 +24,16 @@ class SizeController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'size_name' => 'required|string|max:255|unique:sizes',
+            'size_name' => 'required|string|max:255|unique:sizes,size_name',
+        ], [
+            'size_name.unique' => 'Kích thước này đã tồn tại!',
         ]);
-
+    
         Size::create(['size_name' => $request->size_name]);
-
+    
         return redirect()->route('admin.size.index')->with('success', 'Kích thước đã được tạo.');
     }
+    
 
     // Hiển thị form sửa kích thước
     public function edit($id)

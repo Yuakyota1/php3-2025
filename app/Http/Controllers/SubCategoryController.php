@@ -65,5 +65,10 @@ public function destroy($id)
     SubCategory::findOrFail($id)->delete();
     return redirect()->route('admin.subcategory.index')->with('success', 'Danh mục con đã được xóa.');
 }
+public function getSubCategories($category_id)
+{
+    $subCategories = \App\Models\SubCategory::where('category_id', $category_id)->get();
+    return response()->json($subCategories);
+}
 
 }

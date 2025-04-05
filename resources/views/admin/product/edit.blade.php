@@ -20,6 +20,18 @@
             <label for="product_name" class="form-label">Tên sản phẩm</label>
             <input type="text" class="form-control" id="product_name" name="product_name" value="{{ $product->product_name }}" required>
         </div>
+        
+        <div class="form-group">
+    <label for="category_id">Danh mục cha</label>
+    <select name="category_id" id="category_id" class="form-control">
+        <option value="">Chọn danh mục</option>
+        @foreach($categories as $category)
+            <option value="{{ $category->id }}" {{ isset($product) && $product->category_id == $category->id ? 'selected' : '' }}>
+                {{ $category->category_name }}
+            </option>
+        @endforeach
+    </select>
+</div>
 
         <!-- Danh mục con -->
         <div class="mb-3">

@@ -42,4 +42,26 @@
         <button type="submit" class="btn btn-primary">Thêm</button>
     </form>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Thành công!',
+            text: '{{ session("success") }}',
+            showConfirmButton: false,
+            timer: 1500
+        });
+    @endif
+
+    @if(session('error'))
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi!',
+            text: '{{ session("error") }}',
+        });
+    @endif
+</script>
+
 @endsection

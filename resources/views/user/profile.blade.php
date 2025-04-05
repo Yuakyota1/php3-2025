@@ -28,7 +28,7 @@
                     <tr>
                         <th class="text-right">Vai trò:</th>
                         <td>
-                            <span class="badge badge-{{ auth()->user()->role == 'admin' ? 'danger' : 'secondary' }}">
+                            <span class="badge {{ auth()->user()->role == 'admin' ? 'bg-danger' : 'bg-secondary' }}">
                                 {{ auth()->user()->role == 'admin' ? 'Quản trị viên' : 'Người dùng' }}
                             </span>
                         </td>
@@ -36,7 +36,7 @@
                     <tr>
                         <th class="text-right">Trạng thái:</th>
                         <td>
-                            <span class="badge badge-{{ auth()->user()->status ? 'success' : 'warning' }}">
+                            <span class="badge {{ auth()->user()->status ? 'bg-success' : 'bg-warning' }}">
                                 {{ auth()->user()->status ? 'Hoạt động' : 'Tạm khóa' }}
                             </span>
                         </td>
@@ -51,6 +51,7 @@
         </div>
     </div>
 </div>
+
 @if(auth()->check() && auth()->user()->status == 0)
 <div class="modal fade" id="blockedModal" tabindex="-1" aria-labelledby="blockedModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -74,8 +75,5 @@
     });
 </script>
 @endif
-
-
-
 
 @include('layout.footer')

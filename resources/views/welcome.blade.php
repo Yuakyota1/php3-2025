@@ -103,7 +103,7 @@
         </div>
         <ul class="la-nav-list-items">
           <li class="ng-scope">
-            <a href="">Trang chủ</a>
+            <a href="/">Trang chủ</a>
           </li>
           <li class="ng-scope">
             <a href="./intro.html">Giới thiệu</a>

@@ -9,12 +9,15 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['product_name', 'description', 'images', 'sub_category_id', 'brand_id'];
+    protected $fillable = ['product_name', 'description', 'images', 'category_id', 'sub_category_id', 'brand_id'];
 
     protected $casts = [
         'images' => 'array', // Chuyển cột JSON 'images' thành mảng PHP
     ];
-
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id', 'id');
+    }
     public function subCategory()
     {
         return $this->belongsTo(SubCategory::class, 'sub_category_id', 'id');

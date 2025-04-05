@@ -19,34 +19,35 @@
         </thead>
         <tbody>
             @foreach ($orders as $order)
-                <tr>
-                    <td>{{ $order->orderCode }}</td>
-                    <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
-                    <td>{{ number_format($order->total_price, 0, ',', '.') }}đ</td>
-                    <td>{{ strtoupper($order->payment_method) }}</td>
-                    <td>
-                        <span class="badge {{ $order->status == 'paid' ? 'bg-success' : ($order->status == 'pending' ? 'bg-warning' : 'bg-danger') }}">
-                            {{ ucfirst($order->status) }}
-                        </span>
-                    </td>
-                    <td>
-                        <a href="{{ route('orders.show', $order->id) }}" class="btn btn-primary btn-sm">Chi tiết</a>
+            <tr>
+                <td>{{ $order->orderCode }}</td>
+                <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
+                <td>{{ number_format($order->total_price, 0, ',', '.') }}đ</td>
+                <td>{{ strtoupper($order->payment_method) }}</td>
+                <td>
+                    <span class="badge {{ $order->status == 'paid' ? 'bg-success' : ($order->status == 'pending' ? 'bg-warning' : 'bg-danger') }}">
+                        {{ ucfirst($order->status) }}
+                    </span>
+                </td>
+                <td>
+                    <a href="{{ route('orders.show', $order->id) }}" class="btn btn-primary btn-sm">Chi tiết</a>
 
-                        @if ($order->status == 'pending')
-                            <form action="{{ route('orders.cancel', $order->id) }}" method="POST" class="d-inline">
-                                @csrf
-                                @method('PUT')
-                                <button type="submit" class="btn btn-warning btn-sm">Hủy đơn</button>
-                            </form>
-                        @elseif ($order->status == 'canceled')
-                            <form action="{{ route('orders.destroy', $order->id) }}" method="POST" class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')">Xóa</button>
-                            </form>
-                        @endif
-                    </td>
-                </tr>
+                    @if ($order->status == 'pending')
+                    <form action="{{ route('orders.cancel', $order->id) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('PUT')
+                        <button type="submit" class="btn btn-warning btn-sm">Hủy đơn</button>
+                    </form>
+                    @elseif (in_array($order->status, ['canceled', 'failed']))
+                    <form action="{{ route('orders.destroy', $order->id) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')">Xóa</button>
+                    </form>
+                    @endif
+
+                </td>
+            </tr>
             @endforeach
         </tbody>
     </table>
@@ -60,23 +61,23 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 @if(session('success'))
-    <script>
-        Swal.fire({
-            title: 'Thành công!',
-            text: "{{ session('success') }}",
-            icon: 'success',
-            confirmButtonText: 'OK'
-        });
-    </script>
+<script>
+    Swal.fire({
+        title: 'Thành công!',
+        text: "{{ session('success') }}",
+        icon: 'success',
+        confirmButtonText: 'OK'
+    });
+</script>
 @endif
 
 @if(session('error'))
-    <script>
-        Swal.fire({
-            title: 'Lỗi!',
-            text: "{{ session('error') }}",
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-    </script>
+<script>
+    Swal.fire({
+        title: 'Lỗi!',
+        text: "{{ session('error') }}",
+        icon: 'error',
+        confirmButtonText: 'OK'
+    });
+</script>
 @endif
