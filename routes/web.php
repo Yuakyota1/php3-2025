@@ -19,11 +19,14 @@ use App\Http\Controllers\BrandController;
 use App\Http\Controllers\OrderItemController;
 use App\Http\Controllers\AdminOrderController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\CommentReplyController;
+
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Middleware\CheckUserStatus;
+
 use App\Http\Controllers\AddressController;
 
 Route::middleware(['auth', 'check.status'])->group(function () {
@@ -199,7 +202,21 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+    Route::post('/comment-replies', [CommentReplyController::class, 'store'])->name('commentReplies.store');
+    Route::delete('/comment-replies/{id}', [CommentReplyController::class, 'destroy'])->name('commentReplies.destroy');
+   
     
+    // Bình luận
+    Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
+    Route::get('/comments/{comment}/edit', [CommentController::class, 'edit'])->name('comments.edit');
+
+// Phản hồi
+Route::get('comment-replies/{id}/edit', [CommentReplyController::class, 'edit'])->name('commentReplies.edit');
+Route::put('comment-replies/{id}', [CommentReplyController::class, 'update'])->name('commentReplies.update');
+
+
+    Route::post('/comment/reply', [CommentReplyController::class, 'store'])->name('commentReplies.store');
+    Route::get('/comment/reply/{id}', [CommentReplyController::class, 'show'])->name('commentReplies.show');
     Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
     Route::post('/favorites', [FavoriteController::class, 'store'])->name('favorites.store');
     Route::delete('/favorites/{id}', [FavoriteController::class, 'destroy'])->name('favorites.destroy');

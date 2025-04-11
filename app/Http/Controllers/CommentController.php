@@ -75,5 +75,60 @@ class CommentController extends Controller
         $comment->delete();
         return back()->with('success', 'Bình luận đã bị xóa.');
     }
-    
+    public function edit($id)
+    {
+        $comment = Comment::findOrFail($id);
+
+        // Kiểm tra quyền sửa bình luận
+        if (auth()->id() !== $comment->user_id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Bạn không có quyền sửa bình luận này!'
+            ], 403);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'comment' => $comment
+        ]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'content' => 'required|string|max:1000',
+            'image' => 'nullable|image|mimes:jpeg,png,webp,jpg,gif|max:2048',
+        ]);
+
+        $comment = Comment::findOrFail($id);
+
+        // Kiểm tra quyền sửa bình luận
+        if (auth()->id() !== $comment->user_id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Bạn không có quyền sửa bình luận này!'
+            ], 403);
+        }
+
+        // Cập nhật nội dung bình luận
+        $comment->content = $request->content;
+
+        // Xử lý ảnh nếu có
+        if ($request->hasFile('image')) {
+            // Xóa ảnh cũ nếu có
+            if ($comment->image) {
+                Storage::disk('public')->delete($comment->image);
+            }
+            // Lưu ảnh mới
+            $comment->image = $request->file('image')->store('comments', 'public');
+        }
+
+        $comment->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Bình luận đã được cập nhật!',
+            'comment' => $comment
+        ]);
+    }
 }

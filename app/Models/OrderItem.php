@@ -10,6 +10,7 @@ class OrderItem extends Model
     use HasFactory;
 
     protected $fillable = [
+        'product_size_color_id', 
         'order_id',
         'product_id',
         'size',
@@ -25,15 +26,19 @@ class OrderItem extends Model
         return $this->belongsTo(Order::class, 'order_id');
     }
 
-public function items()
-{
-    return $this->hasMany(OrderItem::class, 'order_id', 'id');
-}
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class, 'order_id', 'id');
+    }
 
 
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id', 'id');
+    }
+    public function productSizeColor()
+    {
+        return $this->belongsTo(ProductSizeColor::class, 'product_size_color_id');
     }
     
 }

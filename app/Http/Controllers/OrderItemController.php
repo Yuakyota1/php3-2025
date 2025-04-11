@@ -10,7 +10,7 @@ class OrderItemController extends Controller
     // Hiển thị danh sách tất cả order_items
     public function index()
     {
-        $orderItems = OrderItem::with('order', 'product')->get();
+        $orderItems = OrderItem::with('order', 'product', 'productSizeColor')->get();
         return response()->json($orderItems);
     }
 
@@ -20,6 +20,7 @@ class OrderItemController extends Controller
         $request->validate([
             'order_id' => 'required|exists:orders,id',
             'product_id' => 'required|exists:products,id',
+            'product_size_color_id' => 'required|exists:product_size_colors,id',
             'size' => 'required|string|max:50',
             'color' => 'required|string|max:50',
             'quantity' => 'required|integer|min:1',
@@ -30,13 +31,16 @@ class OrderItemController extends Controller
 
         $orderItem = OrderItem::create($request->all());
 
-        return response()->json(['message' => 'Sản phẩm đã được thêm vào đơn hàng', 'data' => $orderItem], 201);
+        return response()->json([
+            'message' => 'Sản phẩm đã được thêm vào đơn hàng',
+            'data' => $orderItem
+        ], 201);
     }
 
     // Hiển thị thông tin một order item cụ thể
     public function show($id)
     {
-        $orderItem = OrderItem::with('order', 'product')->find($id);
+        $orderItem = OrderItem::with('order', 'product', 'productSizeColor')->find($id);
 
         if (!$orderItem) {
             return response()->json(['message' => 'Không tìm thấy sản phẩm trong đơn hàng'], 404);
@@ -55,6 +59,7 @@ class OrderItemController extends Controller
         }
 
         $request->validate([
+            'product_size_color_id' => 'sometimes|required|exists:product_size_colors,id',
             'quantity' => 'sometimes|required|integer|min:1',
             'price' => 'sometimes|required|numeric|min:0',
             'total' => 'sometimes|required|numeric|min:0',
@@ -63,7 +68,10 @@ class OrderItemController extends Controller
 
         $orderItem->update($request->all());
 
-        return response()->json(['message' => 'Cập nhật sản phẩm trong đơn hàng thành công', 'data' => $orderItem]);
+        return response()->json([
+            'message' => 'Cập nhật sản phẩm trong đơn hàng thành công',
+            'data' => $orderItem
+        ]);
     }
 
     // Xóa order item

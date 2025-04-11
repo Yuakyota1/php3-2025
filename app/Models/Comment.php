@@ -16,7 +16,10 @@ class Comment extends Model
         'image',
         'rating',
     ];
-
+    public function replies()
+    {
+        return $this->hasMany(CommentReply::class);
+    }
     // Quan hệ với User
     public function user()
     {
@@ -28,4 +31,5 @@ class Comment extends Model
     {
         return $this->belongsTo(Product::class);
     }
+    
 }

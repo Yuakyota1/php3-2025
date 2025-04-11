@@ -62,43 +62,73 @@ class AdminOrderController extends Controller
         }
         return redirect()->back()->with('error', 'Chỉ có thể xóa đơn hàng đã hủy.');
     }
-    public function getRevenueData()
-    {
-        // Thống kê doanh thu
-        $orders = Order::selectRaw('DATE(created_at) as date, MONTH(created_at) as month, YEAR(created_at) as year, SUM(total_price) as revenue')
-            ->where('status', 'paid') // Chỉ lấy đơn hàng đã thanh toán
-            ->groupBy('date', 'month', 'year')
-            ->orderBy('date')
-            ->get();
-    
-        // Thống kê số lượng sản phẩm
-        $quantities = DB::table('product_size_colors')
-            ->selectRaw('DATE(created_at) as date, MONTH(created_at) as month, YEAR(created_at) as year, SUM(quantity) as total_quantity')
-            ->groupBy('date', 'month', 'year')
-            ->orderBy('date')
-            ->get();
-    
-        // Tạo mảng dữ liệu
-        $labels = [];
-        $revenue = [];
-        $quantity = [];
-    
-        foreach ($orders as $order) {
-            $labels[] = "{$order->date} (Tháng {$order->month}/{$order->year})";
-            $revenue[] = $order->revenue;
-        }
-    
-        foreach ($quantities as $q) {
-            $quantity[] = $q->total_quantity;
-        }
-    
-        return response()->json([
-            'labels' => $labels,
-            'revenue' => $revenue,
-            'quantity' => $quantity
-        ]);
+    public function getRevenueData(Request $request)
+{
+    $startDate = $request->query('start_date');
+    $endDate = $request->query('end_date');
+
+    $ordersQuery = Order::selectRaw('DATE(created_at) as date, SUM(total_price) as revenue')
+        ->where('status', 'paid');
+
+    if ($startDate) {
+        $ordersQuery->whereDate('created_at', '>=', $startDate);
     }
-    
+    if ($endDate) {
+        $ordersQuery->whereDate('created_at', '<=', $endDate);
+    }
+
+    $orders = $ordersQuery
+        ->groupBy('date')
+        ->orderBy('date')
+        ->get();
+
+    // Lấy số lượng sản phẩm và chi phí nhập hàng
+    $itemsQuery = DB::table('order_items')
+        ->join('orders', 'orders.id', '=', 'order_items.order_id')
+        ->join('product_size_colors', 'product_size_colors.id', '=', 'order_items.product_size_color_id')
+        ->selectRaw('DATE(orders.created_at) as date, 
+                     SUM(order_items.quantity) as total_quantity,
+                     SUM(order_items.quantity * product_size_colors.import_price) as total_cost')
+        ->where('orders.status', 'paid');
+
+    if ($startDate) {
+        $itemsQuery->whereDate('orders.created_at', '>=', $startDate);
+    }
+    if ($endDate) {
+        $itemsQuery->whereDate('orders.created_at', '<=', $endDate);
+    }
+
+    $items = $itemsQuery
+        ->groupBy('date')
+        ->orderBy('date')
+        ->get();
+
+    // Chuẩn bị dữ liệu cho biểu đồ
+    $labels = [];
+    $revenue = [];
+    $realRevenue = [];
+    $quantities = [];
+
+    foreach ($orders as $order) {
+        $labels[] = $order->date;
+        $revenue[] = $order->revenue;
+
+        $match = $items->firstWhere('date', $order->date);
+        $cost = $match ? $match->total_cost : 0;
+        $qty = $match ? $match->total_quantity : 0;
+
+        $realRevenue[] = $order->revenue - $cost;
+        $quantities[] = $qty;
+    }
+
+    return response()->json([
+        'labels' => $labels,
+        'revenue' => $revenue,
+        'real_revenue' => $realRevenue,
+        'quantity' => $quantities
+    ]);
+}
+
     
 }
 

@@ -35,8 +35,18 @@
         </div>
 
         <div class="mb-3">
-            <label for="price" class="form-label">Giá</label>
+            <label for="price" class="form-label">Giá bán thực tế</label>
             <input type="text" name="price" id="price" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="import_price" class="form-label">Giá nhập</label>
+            <input type="text" name="import_price" id="import_price" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="regular_price" class="form-label">Giá định bán</label>
+            <input type="text" name="regular_price" id="regular_price" class="form-control" required>
         </div>
 
         <button type="submit" class="btn btn-primary">Thêm</button>

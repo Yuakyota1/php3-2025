@@ -13,7 +13,9 @@
                 <th>Màu sắc</th>
                 <th>Kích thước</th>
                 <th>Số lượng</th>
-                <th>Giá</th>
+                <th>Giá bán</th>
+                <th>Giá nhập</th>
+                <th>Giá định bán</th>
                 <th>Hành động</th>
             </tr>
         </thead>
@@ -26,6 +28,8 @@
                 <td>{{ $item->size->size_name }}</td>
                 <td>{{ $item->quantity }}</td>
                 <td>{{ number_format($item->price, 2) }} VNĐ</td>
+                <td>{{ number_format($item->import_price, 2) }} VNĐ</td>
+                <td>{{ number_format($item->regular_price, 2) }} VNĐ</td>
                 <td>
                     <a href="{{ route('admin.product_size_color.edit', $item->id) }}" class="btn btn-warning btn-sm">Sửa</a>
                     <form action="{{ route('admin.product_size_color.destroy', $item->id) }}" method="POST" style="display:inline;">

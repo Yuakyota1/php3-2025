@@ -100,7 +100,7 @@
         <li class="header_nav-list-item"><a href="/" class="active">Trang chủ</a></li>
         <li class="header_nav-list-item"><a href="#">Giới thiệu</a></li>
         <li class="header_nav-list-item has-mega">
-          <a href="./product">Sản phẩm <i class="fas fa-angle-right" style="margin-left: 5px;"></i></a>
+          <a href="/product">Sản phẩm <i class="fas fa-angle-right" style="margin-left: 5px;"></i></a>
           <div class="mega-content" style="overflow-x: hidden;">
             <div class="row">
               <ul class="col-8 no-padding level0">

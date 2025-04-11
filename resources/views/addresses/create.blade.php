@@ -17,6 +17,10 @@
 
         <form action="{{ route('addresses.store') }}" method="POST">
             @csrf
+            <div class="form-group">
+    <label for="email">Email</label>
+    <input type="email" name="email" class="form-control" value="{{ old('email') }}" required>
+</div>
 
             <div class="form-group">
                 <label for="full_name">Họ và Tên:</label>

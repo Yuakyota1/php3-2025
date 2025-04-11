@@ -103,6 +103,24 @@ button:hover {
      <h2>1. Địa chỉ giao hàng</h2>
      <form action="/checkout" method="POST">
       @csrf
+      @if ($addresses->count())
+<div class="form-group" style="margin-bottom: 20px;">
+  <label for="address_id">Chọn địa chỉ đã lưu</label>
+  <select id="address_id" class="form-control">
+    <option value="">-- Chọn địa chỉ --</option>
+    @foreach ($addresses as $address)
+    <option value="{{ $address->id }}"
+    data-name="{{ $address->full_name }}"
+    data-phone="{{ $address->phone }}"
+    data-address="{{ $address->address_line1 . ', ' . $address->city }}"
+    data-email="{{ $address->email }}"
+>
+    {{ $address->full_name }} - {{ $address->phone }} - {{ $address->address_line1 }}, {{ $address->city }} - {{ $address->email }} - {{ $address->zip_code }}
+</option>
+    @endforeach
+  </select>
+</div>
+@endif
       <div class="form-group" style="margin-bottom: 20px;">
        <label for="email">Địa chỉ email *</label>
        <input name="email" id="email" placeholder="example@gmail.com" type="email" required/>
@@ -115,6 +133,8 @@ button:hover {
        <label for="phone">Số điện thoại *</label>
        <input name="phone" id="phone" placeholder="Số điện thoại" type="text" required/>
       </div>
+     
+
       <div class="form-group" style="margin-bottom: 20px;">
        <label for="address">Địa chỉ cụ thể *</label>
        <input name="address" id="address" placeholder="Địa chỉ cụ thể" type="text" required/>
@@ -137,7 +157,8 @@ button:hover {
        <input id="coupon_code" placeholder="Nhập mã giảm giá" type="text"/>
        <button id="apply_coupon">Sử dụng</button>
       </div>
-      
+      <input type="hidden" name="address_id" id="selected_address_id">
+
       <input type="hidden" name="discount_amount" id="discount_amount" value="0">
       <div class="text-center" style="margin-top: 30px;">
        <button type="submit">ĐẶT HÀNG</button>
@@ -279,3 +300,30 @@ $('#apply_coupon').click(function (e) {
 
 <!-- AJAX Script -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+const selectAddress = document.getElementById('address_id');
+const manualFields = document.getElementById('manual-fields');
+
+selectAddress?.addEventListener('change', function () {
+    let selected = this.options[this.selectedIndex];
+    
+    if (this.value) {
+        // Đổ dữ liệu từ địa chỉ đã lưu
+        document.getElementById('name').value = selected.dataset.name;
+        document.getElementById('phone').value = selected.dataset.phone;
+        document.getElementById('email').value = selected.dataset.email;
+        document.getElementById('address').value = selected.dataset.address;
+
+        // Ẩn các trường thủ công
+        manualFields.style.display = 'none';
+    } else {
+        // Hiện các trường nếu không chọn địa chỉ
+        document.getElementById('name').value = '';
+        document.getElementById('phone').value = '';
+        document.getElementById('email').value = '';
+        document.getElementById('address').value = '';
+
+        manualFields.style.display = 'block';
+    }
+});
+</script>

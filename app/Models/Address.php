@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,7 +11,7 @@ class Address extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'full_name', 'phone', 'address_line1', 'address_line2',
+        'user_id', 'full_name','email', 'phone', 'address_line1', 'address_line2',
         'city', 'state', 'zip_code', 'country', 'is_default'
     ];
 
@@ -18,4 +19,5 @@ class Address extends Model
     {
         return $this->belongsTo(User::class);
     }
+    
 }

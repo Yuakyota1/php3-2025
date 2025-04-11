@@ -4,6 +4,10 @@
 <div class="container mt-5">
     <div class="card shadow-lg p-4 rounded">
         <h2 class="text-center mb-4">Chỉnh Sửa Địa Chỉ</h2>
+        <div class="form-group">
+    <label for="email">Email</label>
+    <input type="email" name="email" id="email" class="form-control" value="{{ old('email', $address->email ?? '') }}" required>
+</div>
 
         @if ($errors->any())
         <div class="alert alert-danger">

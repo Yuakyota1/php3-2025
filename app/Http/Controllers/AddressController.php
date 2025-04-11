@@ -21,12 +21,12 @@ class AddressController extends Controller
     
         return view('addresses.create', compact('cities', 'states', 'countries'));
     }
-    
 
     public function store(Request $request)
     {
         $request->validate([
             'full_name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
             'phone' => 'required|string|max:15',
             'address_line1' => 'required|string|max:255',
             'address_line2' => 'nullable|string|max:255',
@@ -45,7 +45,6 @@ class AddressController extends Controller
     
         return redirect()->route('addresses.index')->with('success', 'Địa chỉ đã được thêm.');
     }
-    
 
     public function edit(Address $address)
     {
@@ -55,12 +54,12 @@ class AddressController extends Controller
     
         return view('addresses.edit', compact('address', 'cities', 'states', 'countries'));
     }
-    
 
     public function update(Request $request, Address $address)
     {
         $request->validate([
             'full_name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
             'phone' => 'required|string|max:15',
             'address_line1' => 'required|string|max:255',
             'address_line2' => 'nullable|string|max:255',
@@ -91,5 +90,4 @@ class AddressController extends Controller
         $address->delete();
         return redirect()->route('addresses.index')->with('success', 'Địa chỉ đã được xóa.');
     }
-    
 }
